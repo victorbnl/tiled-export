@@ -15,6 +15,9 @@ def parse_map(filename):
 
         tileset_attrs = tileset_node.attrs()
 
+        tileset_attrs["filename"] = tileset_attrs["source"]
+        del tileset_attrs["source"]
+
         tileset = Tileset(**tileset_attrs)
         tilesets.append(tileset)
 

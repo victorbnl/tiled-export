@@ -16,7 +16,6 @@ class Encoder:
 
             content = ""
             for i, (k, v) in enumerate(obj.items()):
-                k = k.rstrip("_")
                 line = f"{self.encode(k)}: {self.encode(v)}"
                 if i != len(obj) - 1:
                     line += ","
@@ -83,4 +82,4 @@ class Encoder:
         if isinstance(obj, str):
             return f"\"{obj}\""
 
-        raise ValueError
+        raise ValueError(type(obj).__name__)

@@ -8,18 +8,19 @@ from tiled_export.map.parse_data import parse_data
 @dataclass
 class Tileset(Base):
 
+    name: str = "tileset"
     firstgid: int = None
-    source: str = None
+    filename: str = None
 
 
 @dataclass
 class Chunk(Base):
 
-    width: int = None
-    height: int = None
-
     x: int = None
     y: int = None
+
+    width: int = None
+    height: int = None
 
     data: str = None
 
@@ -108,6 +109,8 @@ class TiledMap(Base):
 
     version: str = None
     tiledversion: str = None
+
+    class_: str = ""
 
     orientation: str = None
     renderorder: str = None

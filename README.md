@@ -23,6 +23,7 @@ python3 -m tiled_export --help
 Here are the features that are known (not) to be supported:
 
 - [x] Maps
+    - [ ] Render orders other than "right-down"
     - [x] Parse:
         - [ ] XML encoding (deprecated)
         - [x] CSV encoding
@@ -37,7 +38,7 @@ Here are the features that are known (not) to be supported:
         - [ ] JavaScript
         - [ ] GameMaker Studio 2
         - [ ] GameMaker room
-        - [ ] Lua
+        - [x] Lua
 - [x] Tilesets
     - [x] Export:
         - [x] JSON
