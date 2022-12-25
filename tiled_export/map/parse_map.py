@@ -1,110 +1,70 @@
-from lxml import etree
-
+from tiled_export.xml import Tree
 from tiled_export.map.dataclasses import *
 
 
-def get_attrs(node):
-
-    attrs = {}
-    for k, v in node.attrib.items():
-        if k in ("id", "class"):
-            k += "_"
-        attrs[k] = v
-
-    return attrs
-
-
 def parse_map(filename):
+    """Parses XML map file into TiledMap object"""
 
-    tree = etree.parse(filename)
+    tree = Tree(filename)
 
-    map_node = tree.xpath("/map")[0]
+    map_node = tree.child("map", prefix="/")
+    map_attrs = map_node.attrs()
 
-    # Map attributes
-    map_attrs = get_attrs(map_node)
-
-    # Get tilesets
     tilesets = []
-    for node in map_node.xpath("./tileset"):
+    for tileset_node in map_node.children("tileset"):
 
-        # Tileset attributes
-        tileset_attrs = get_attrs(node)
+        tileset_attrs = tileset_node.attrs()
 
         tileset = Tileset(**tileset_attrs)
         tilesets.append(tileset)
 
-    # Get tile layers
     tile_layers = []
-    for node in map_node.xpath("./layer"):
+    for layer_node in map_node.children("layer"):
 
-        # Layer attributes
-        layer_attrs = get_attrs(node) | get_attrs(node.xpath("./data")[0])
+        layer_attrs = layer_node.attrs() | layer_node.child("data").attrs()
 
-        # Args to provide to TileLayer()
         args = {}
 
-        # If map is infinite
-        if (map_attrs["infinite"] == "1"):
+        if map_attrs["infinite"] == "1":
 
-            # Get chunks
             chunks = []
-            for chunk_node in node.xpath("./data/chunk"):
+            for chunk_node in layer_node.child("data").children("chunk"):
 
-                # Get chunk attributes
-                chunk_attrs = get_attrs(chunk_node)
+                chunk_attrs = chunk_node.attrs()
+                chunk_data = chunk_node.text()
 
-                # Parse chunk data
-                data = chunk_node.text.strip()
-
-                chunk = Chunk(data=data, **chunk_attrs)
+                chunk = Chunk(data=chunk_data, **chunk_attrs)
                 chunks.append(chunk)
 
                 args["chunks"] = chunks
 
-        # If it is not
         else:
 
-            # Get data
-            data_node = node.xpath("./data")[0]
-            data = data_node.text.strip()
+            data_node = layer_node.child("data")
+            data = data_node.text()
 
             args["data"] = data
 
-        layer = TileLayer(
-            **args,
-            **layer_attrs
-        )
+        layer = TileLayer(**args, **layer_attrs)
         tile_layers.append(layer)
 
-    # Get object groups
     object_groups = []
-    for node in map_node.xpath("./objectgroup"):
+    for object_group_node in map_node.children("objectgroup"):
 
-        # Group attributes
-        object_group_attrs = get_attrs(node)
+        object_group_attrs = object_group_node.attrs()
 
-        # Get objects
         objects = []
-        for obj_node in node.xpath("./object"):
+        for object_node in object_group_node.children("object"):
 
-            # Object attributes
-            object_attrs = get_attrs(obj_node)
+            object_attrs = object_node.attrs()
 
-            obj = Object(**object_attrs)
-            objects.append(obj)
+            object_ = Object(**object_attrs)
+            objects.append(object_)
 
-        object_group = ObjectGroup(
-            objects=objects,
-            **object_group_attrs
-        )
+        object_group = ObjectGroup(objects=objects, **object_group_attrs)
         object_groups.append(object_group)
 
     layers = tile_layers + object_groups
 
-    tilemap = TiledMap(
-        tilesets=tilesets,
-        layers=layers,
-        **map_attrs
-    )
-
-    return tilemap
+    tiledmap = TiledMap(tilesets=tilesets, layers=layers, **map_attrs)
+    return tiledmap

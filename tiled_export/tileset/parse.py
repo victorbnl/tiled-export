@@ -1,49 +1,33 @@
-from lxml import etree
-
+from tiled_export.xml import Tree
 from tiled_export.tileset.dataclasses import *
 
 
-def get_attrs(node):
-
-    attrs = {}
-    for k, v in node.attrib.items():
-        if k in ("id", "class"):
-            k += "_"
-        attrs[k] = v
-
-    return attrs
-
-
 def parse_tileset(filename):
+    """Parses XML tileset into Tileset object"""
 
-    tree = etree.parse(filename)
+    tree = Tree(filename)
 
-    tileset_node = tree.xpath("/tileset")[0]
-    tileset_attrs = get_attrs(tileset_node)
+    tileset_node = tree.child("tileset", prefix="/")
+    tileset_attrs = tileset_node.attrs()
 
-    grid_node = tileset_node.xpath("./grid")[0]
-    grid_attrs = get_attrs(grid_node)
+    grid_node = tileset_node.child("grid")
+    grid_attrs = grid_node.attrs()
     grid = Grid(**grid_attrs)
 
     tiles = []
-    for tile_node in tileset_node.xpath("./tile"):
+    for tile_node in tileset_node.children("tile"):
 
-        tile_attrs = get_attrs(tile_node)
+        tile_attrs = tile_node.attrs()
 
-        img_node = tile_node.xpath("./image")[0]
-        img_attrs = get_attrs(img_node)
+        image_node = tile_node.child("image")
+        image_attrs = image_node.attrs()
 
-        tile_attrs["image"] = img_attrs["source"]
-        tile_attrs["imagewidth"] = img_attrs["width"]
-        tile_attrs["imageheight"] = img_attrs["height"]
+        tile_attrs["image"] = image_attrs["source"]
+        tile_attrs["imagewidth"] = image_attrs["width"]
+        tile_attrs["imageheight"] = image_attrs["height"]
 
         tile = Tile(**tile_attrs)
         tiles.append(tile)
 
     tileset = Tileset(tiles=tiles, grid=grid, **tileset_attrs)
     return tileset
-
-
-if __name__ == "__main__":
-
-    print(parse_tileset("ad.tsx"))

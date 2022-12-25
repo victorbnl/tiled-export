@@ -6,3 +6,4 @@ assets/
 *.tsx
 *.csv
 *.json
+out
