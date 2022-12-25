@@ -23,7 +23,6 @@ def get_map_size(tiledmap):
                 if chunk.y + chunk.height > bottom:
                     bottom = chunk.y + chunk.height
 
-        print(left, right, top, bottom)
         return (right - left, bottom - top)
 
 

@@ -38,7 +38,6 @@ def strip_none(obj):
                 obj[k] = strip_none(v)
 
             if v == None:
-                print(f"Removing key {k}")
                 obj.pop(k)
 
     return obj

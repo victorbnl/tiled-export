@@ -77,7 +77,6 @@ class TileLayer(Base):
 
         if self.chunks:
             for chunk in self.chunks:
-                print(chunk.data)
                 groups.append(parse_data(chunk.data, self.encoding, self.compression, chunk.width, chunk.height))
 
         if self.data:
