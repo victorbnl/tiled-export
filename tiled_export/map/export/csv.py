@@ -11,119 +11,150 @@ def get_map_size(tiledmap):
         return (tiledmap.width, tiledmap.height)
 
     else:
-        width, height = 0, 0
+        left = right = top = bottom = 0
         for layer in tiledmap.layers:
             for chunk in layer.chunks:
-                if chunk.x + chunk.width > width:
-                    width = chunk.x + chunk.width
-                if chunk.y + chunk.height > height:
-                    height = chunk.y + chunk.height
-        return (width, height)
+                if chunk.x < left:
+                    left = chunk.x
+                if chunk.x + chunk.width > right:
+                    right = chunk.x + chunk.width
+                if chunk.y < top:
+                    top = chunk.y
+                if chunk.y + chunk.height > bottom:
+                    bottom = chunk.y + chunk.height
+
+        print(left, right, top, bottom)
+        return (right - left, bottom - top)
 
 
-def flatten(tiledmap):
-    """Converts a layered tiledmap to a flat matrix"""
+def get_map_origin_index(tiledmap):
+    """Get index of map origin"""
 
-    map_width, map_height = get_map_size(tiledmap)
+    if not tiledmap.infinite:
+        return (0, 0)
 
-    result = [
-        [
-            -1
-            for _ in range(map_width)
-        ]
-        for _ in range(map_height)
-    ]
+    else:
+        x = y = 0
 
-    # For each layer
-    for layer in tiledmap.layers:
-        # We want only tile layers
-        if isinstance(layer, TileLayer):
+        for layer in tiledmap.layers:
+            for chunk in layer.chunks:
+                if chunk.x < x:
+                    x = chunk.x
+                if chunk.y < y:
+                    y = chunk.y
 
-            # Chunks
-            if tiledmap.infinite:
-                for chunk in layer.chunks:
+        x = (-1) * x
+        y = (-1) * y
 
-                    # For each tile
-                    for i, row in enumerate(chunk.data):
-                        for j, gid in enumerate(row):
-                            if gid != 0:
-
-                                result[chunk.y+i][chunk.x+j] = gid
-
-            # Data
-            else:
-
-                # For each tile
-                for i, row in enumerate(layer.data):
-                    for j, gid in enumerate(row):
-
-                        result[j][i] = gid
-
-    return result
+        return (x, y)
 
 
-def fix_gids(matrix, tilesets):
+def fix_gid(matrix, tilesets):
     """Fix the GIDs to make them comply with Tiled CSV export format"""
 
-    # For each tile
-    for i, row in enumerate(matrix):
-        for j, gid in enumerate(row):
-            if (gid != -1):
+    # Get tile's tileset
+    tileset = tilesets[0]
+    for ts in tilesets:
+        if ts.firstgid > tileset.firstgid and gid >= ts.firstgid:
+            tileset = ts
 
-                # Get tile's tileset
-                tileset = tilesets[0]
-                for ts in tilesets:
-                    if ts.firstgid > tileset.firstgid and gid >= ts.firstgid:
-                        tileset = ts
-
-                matrix[i][j] = gid - tileset.firstgid
-
-    return matrix
+    return gid - tileset.firstgid
 
 
-def autocrop(matrix, max_left, max_right):
-    """Crops a matrix of tiles to leave no space around the map"""
+class Table:
 
-    crop_left = max_left
-    crop_right = 0
-    crop_top = max_right
-    crop_bottom = 0
+    def __init__(self, origin: tuple, size: tuple):
 
-    # For each tile
-    for i, row in enumerate(matrix):
-        for j, gid in enumerate(row):
+        self.origin = origin
+        self.size = size
+        self.array = [
+            [
+                -1
+                for _ in range(size[0])
+            ]
+            for _ in range(size[1])
+        ]
 
-            # If tile is not empty
-            if gid != -1:
+    def write(self, x, y, v):
+        """Writes value v at coordinates (x, y)"""
 
-                if j < crop_left:
-                    crop_left = j
+        self.array[self.origin[1]+y][self.origin[0]+x] = v
 
-                if j > crop_right:
-                    crop_right = j
+    def get(self, x, y):
+        """Gets value at coordinates (x, y)"""
 
-                if i < crop_top:
-                    crop_top = i
+        return self.array[self.origin[1]+y][self.origin[0]+x]
 
-                if i > crop_bottom:
-                    crop_bottom = i
+    def autocrop(self):
+        """Crops a itself to leave no space around the map"""
 
-    # Crop
-    new_matrix = []
-    for row in matrix[crop_top:crop_bottom+1]:
-        new_matrix.append(row[crop_left:crop_right+1])
+        crop_left = self.size[0]
+        crop_right = 0
+        crop_top = self.size[1]
+        crop_bottom = 0
 
-    return new_matrix
+        # For each tile
+        for y, row in enumerate(self.array):
+            for x, gid in enumerate(row):
+
+                # If tile is not empty
+                if gid != -1:
+
+                    if x < crop_left:
+                        crop_left = x
+
+                    if x > crop_right:
+                        crop_right = x
+
+                    if y < crop_top:
+                        crop_top = y
+
+                    if y > crop_bottom:
+                        crop_bottom = y
+
+        # Crop
+        self.array = self.array[crop_top:crop_bottom+1]
+        for i in range(len(self.array)):
+            self.array[i] = self.array[i][crop_left:crop_right+1]
+
+    @staticmethod
+    def from_tiledmap(tiledmap):
+
+        # Get origin and size
+        origin = get_map_origin_index(tiledmap)
+        size = get_map_size(tiledmap)
+
+        table = Table(origin, size)
+
+        # Flatten layers' data into table
+        for layer in tiledmap.layers:
+            if isinstance(layer, TileLayer):
+                if tiledmap.infinite:
+                    for chunk, group in zip(layer.chunks, layer):
+                        for y, row in enumerate(group):
+                            for x, gid in enumerate(row):
+                                if gid != 0:
+                                    table.write(chunk.x+x, chunk.y+y, gid)
+                else:
+                    for group in layer:
+                        for y, row in enumerate(group):
+                            for x, gid in enumerate(row):
+                                table.write(x, y, gid)
+
+        return table
+
+    def rows(self):
+        return self.array
 
 
 def export(tiledmap):
-    """Exports a tilemap to CSV"""
+    """Exports a tiledmap to CSV"""
 
-    matrix = flatten(tiledmap)
-    matrix = fix_gids(matrix, tiledmap.tilesets)
-    matrix = autocrop(matrix, tiledmap.width, tiledmap.height)
+    table = Table.from_tiledmap(tiledmap)
+
+    table.autocrop()
 
     out = io.StringIO()
-    csv.writer(out).writerows(matrix)
+    csv.writer(out).writerows(table.rows())
 
     return out.getvalue()

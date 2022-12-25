@@ -2,6 +2,7 @@ import dataclasses
 from dataclasses import dataclass, fields
 
 from tiled_export.base_dataclass import Base
+from tiled_export.map.parse_data import parse_data
 
 
 @dataclass
@@ -20,7 +21,7 @@ class Chunk(Base):
     x: int = None
     y: int = None
 
-    data: list = None
+    data: str = None
 
 
 @dataclass
@@ -46,6 +47,7 @@ class TileLayer(Base):
 
     id_: int = None
     name: str = None
+    class_: str = ""
 
     width: int = None
     height: int = None
@@ -57,21 +59,31 @@ class TileLayer(Base):
     x: int = 0
     y: int = 0
 
-    chunks: list = None
-    data: list = None
+    offsetx: int = 0
+    offsety: int = 0
 
-    def get_tiles(self):
+    parallaxx: int = 1
+    parallaxy: int = 1
+
+    encoding: str = None
+    compression: str = None
+
+    chunks: list = None
+    data: str = None
+
+    def __iter__(self):
 
         groups = []
 
         if self.chunks:
             for chunk in self.chunks:
-                groups.append(chunk.data)
+                print(chunk.data)
+                groups.append(parse_data(chunk.data, self.encoding, self.compression, chunk.width, chunk.height))
 
         if self.data:
-            groups.append(self.data)
+            groups.append(parse_data(self.data, self.encoding, self.compression, self.width, self.height))
 
-        return groups
+        return groups.__iter__()
 
 
 @dataclass

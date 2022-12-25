@@ -1,63 +1,6 @@
 from lxml import etree
 
-import csv
-import base64
-import gzip
-import zlib
-import zstd
-import struct
-
 from tiled_export.map.dataclasses import *
-
-
-def parse_data(data, encoding="csv", compression=None, width=16, height=16):
-
-    data = data.strip()
-
-    # Parse CSV
-    if encoding == "csv":
-        rows = [row.rstrip(", ") for row in data.splitlines()]
-        parsed = [[int(gid) for gid in row] for row in csv.reader(rows)]
-
-    # Parse base64
-    if encoding == "base64":
-
-        parsed = [
-            [
-                -1
-                for _ in range(width)
-            ]
-            for _ in range(height)
-        ]
-
-        # Decode base64
-        bytes_array = base64.b64decode(data)
-
-        # No compression
-        if compression == None:
-            array = bytes_array
-
-        # Gzip compression
-        if compression == "gzip":
-            array = gzip.decompress(bytes_array)
-
-        # zlib compression
-        if compression == "zlib":
-            array = zlib.decompress(bytes_array)
-
-        # Zstandard compression
-        if compression == "zstd":
-            array = zstd.ZSTD_uncompress(bytes_array)
-
-        # Decode values
-        length = width*height
-        values = struct.unpack(f"<{length}I", array)
-
-        # Separate lines
-        for i, v in enumerate(values):
-            parsed[i//width][i%width] = v
-
-    return parsed
 
 
 def get_attrs(node):
@@ -95,12 +38,7 @@ def parse_map(filename):
     for node in map_node.xpath("./layer"):
 
         # Layer attributes
-        layer_attrs = get_attrs(node)
-
-        # Get data format
-        data_node = node.xpath("./data")[0]
-        encoding = data_node.get("encoding")
-        compression = data_node.get("compression")
+        layer_attrs = get_attrs(node) | get_attrs(node.xpath("./data")[0])
 
         # Args to provide to TileLayer()
         args = {}
@@ -112,15 +50,13 @@ def parse_map(filename):
             chunks = []
             for chunk_node in node.xpath("./data/chunk"):
 
-                # Get chunk attributs
+                # Get chunk attributes
                 chunk_attrs = get_attrs(chunk_node)
 
                 # Parse chunk data
-                width = int(chunk_node.get("width"))
-                height = int(chunk_node.get("height"))
-                parsed = parse_data(chunk_node.text, encoding, compression, width, height)
+                data = chunk_node.text.strip()
 
-                chunk = Chunk(data=parsed, **chunk_attrs)
+                chunk = Chunk(data=data, **chunk_attrs)
                 chunks.append(chunk)
 
                 args["chunks"] = chunks
@@ -130,9 +66,7 @@ def parse_map(filename):
 
             # Get data
             data_node = node.xpath("./data")[0]
-            width = int(map_node.get("width"))
-            height = int(map_node.get("height"))
-            data = parse_data(data_node.text, encoding, compression, width, height)
+            data = data_node.text.strip()
 
             args["data"] = data
 

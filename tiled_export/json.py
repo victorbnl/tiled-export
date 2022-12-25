@@ -11,25 +11,18 @@ class Encoder:
 
         # Dict
         if isinstance(obj, dict):
+
             s = "{" + self.nl
 
             content = ""
-
             for i, (k, v) in enumerate(obj.items()):
-
-                if v != None:
-
-                    k = k.rstrip("_")
-
-                    line = f"{self.encode(k)}: {self.encode(v)}"
-
-                    if i != len(obj) - 1:
-                        line += ","
-
-                    content += line + self.nl
+                k = k.rstrip("_")
+                line = f"{self.encode(k)}: {self.encode(v)}"
+                if i != len(obj) - 1:
+                    line += ","
+                content += line + self.nl
 
             s += self.indent(content)
-
             s += "}"
 
             return s

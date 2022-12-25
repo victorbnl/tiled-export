@@ -1,6 +1,6 @@
 import importlib
 
-from tiled_export.map.parse import parse_map
+from tiled_export.map.parse_map import parse_map
 
 
 def convert_map(filename, format):
