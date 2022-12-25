@@ -1,0 +1,14 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tiled_export"
+version = "1.0.0"
+dependencies = [
+    "lxml",
+    "zstd",
+]
+
+[project.scripts]
+tiled-export = "tiled_export.main:main"

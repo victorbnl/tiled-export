@@ -1,0 +1,7 @@
+venv/
+
+assets/
+*.tmx
+*.tsx
+*.csv
+*.json
