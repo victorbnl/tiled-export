@@ -1,9 +1,5 @@
 venv/
 **/__pycache__/
 
-assets/
-*.tmx
-*.tsx
-*.csv
-*.json
-out
+in.tmp
+out.tmp
