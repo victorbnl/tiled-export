@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 
 from tiled_export.types.tiled._base import *
+from tiled_export.parse_data import parse_data
 
 
 @dataclass
