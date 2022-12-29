@@ -32,7 +32,7 @@ class JsonEncoder:
         if isinstance(obj, list):
 
             # Matrix
-            if all([isinstance(item, list) for item in obj]):
+            if len(obj) > 0 and all([isinstance(item, list) for item in obj]):
 
                 s = "[" + self.nl
 
@@ -54,16 +54,19 @@ class JsonEncoder:
             # Classic list
             else:
 
-                s = "[" + self.nl
+                s = "["
 
-                content = ""
-                for i, v in enumerate(obj):
-                    line = self.encode(v)
-                    if i != len(obj) - 1:
-                        line += ","
-                    content += line + self.nl
+                if len(obj) > 0:
 
-                s += self.indent(content)
+                    content = ""
+                    for i, v in enumerate(obj):
+                        suffix = f",{self.nl}" if i != len(obj) - 1 else ""
+                        content += self.encode(v) + suffix
+
+                    s += self.nl
+                    s += self.indent(content)
+                    s += self.nl
+
                 s += "]"
 
                 return s
