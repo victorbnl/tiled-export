@@ -7,6 +7,7 @@ import struct
 
 
 def parse_data(data, encoding="csv", compression=None, width=16, height=16):
+    """Parses a Tiled data block with given encoding and compression"""
 
     data = data.strip()
 

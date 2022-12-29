@@ -1,12 +1,12 @@
 import dataclasses
 from dataclasses import fields
 
-from tiled_export.map.parse_data import parse_data
-from tiled_export.map.dataclasses import *
+from tiled_export.parse_data import parse_data
+from tiled_export.types import *
 
 
-def tiledmap_to_dict(obj, _layer=None, _field_name=None):
-    """Convert tiledmap to dictionary (recursive)"""
+def tiled_to_dict(obj, _layer=None, _field_name=None):
+    """Convert Tiled object to dictionary (recursive)"""
 
     # Layers
     if isinstance(obj, TileLayer):
@@ -14,7 +14,7 @@ def tiledmap_to_dict(obj, _layer=None, _field_name=None):
 
     # Lists
     if isinstance(obj, list):
-        return [tiledmap_to_dict(v, _layer) for v in obj]
+        return [tiled_to_dict(v, _layer) for v in obj]
 
     # Dataclasses
     if dataclasses.is_dataclass(obj):
@@ -23,7 +23,7 @@ def tiledmap_to_dict(obj, _layer=None, _field_name=None):
             k, v = field.name, getattr(obj, field.name)
             k = k.rstrip("_")
             if v != None:
-                dict_[k] = tiledmap_to_dict(v, _layer, field.name)
+                dict_[k] = tiled_to_dict(v, _layer, field.name)
         return dict_
 
     # Data field

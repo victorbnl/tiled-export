@@ -1,7 +1,7 @@
 import csv
 import io
 
-from tiled_export.map.dataclasses import Tileset, TileLayer
+from tiled_export.types import Map, Tileset, TileLayer
 
 
 def get_map_size(tiledmap):
@@ -146,10 +146,13 @@ class Table:
         return self.array
 
 
-def export(tiledmap):
-    """Exports a tiledmap to CSV"""
+def export(obj):
+    """Exports a Tiled map to CSV"""
 
-    table = Table.from_tiledmap(tiledmap)
+    if not isinstance(obj, Map):
+        raise ValueError("Map expected for conversion to CSV")
+
+    table = Table.from_tiledmap(obj)
 
     table.autocrop()
 

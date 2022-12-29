@@ -1,4 +1,4 @@
-from lxml import etree
+import xml.etree.cElementTree as etree
 
 
 class Node:
@@ -8,43 +8,52 @@ class Node:
 
         self.node = node
 
+    def tag(self):
+        """Gets node tag"""
+
+        return self.node.tag
+
     def text(self):
-        """Get node text"""
+        """Gets node text"""
 
         return self.node.text.strip()
 
     def attrs(self):
-        """Get attributes of node, adding an underscore to Python reserved keywords"""
+        """Gets attributes of node, adding an underscore to Python reserved keywords"""
 
         attrs = {}
         for k, v in self.node.attrib.items():
 
-            if k in ("id", "class"):
+            if k in ("id", "class", "type"):
                 k += "_"
 
             attrs[k] = v
 
         return attrs
 
-    def children(self, name, *, prefix="./"):
-        """Gets list of children with given name"""
+    def children(self):
+        """Gets list of children"""
 
-        return [Node(xnode) for xnode in self.node.xpath(prefix + name)]
+        return [Node(xnode) for xnode in self.node]
 
-    def child(self, name, *, prefix="./"):
-        """Gets first child element with given name"""
+    def child(self):
+        """Gets first child element"""
 
-        children = self.children(name, prefix=prefix)
+        children = self.children()
         if len(children):
             return children[0]
         else:
             return None
 
 
-class Tree(Node):
+class Tree():
 
     def __init__(self, filename):
         """A XML tree"""
 
-        node = etree.parse(filename)
-        super().__init__(node)
+        self.tree = etree.parse(filename)
+
+    def root(self):
+        """Get tree's root node"""
+
+        return Node(self.tree.getroot())

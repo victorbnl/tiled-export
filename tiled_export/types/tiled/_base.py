@@ -1,5 +1,5 @@
 import dataclasses
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, field, fields
 from pydoc import locate
 
 
@@ -24,3 +24,10 @@ class Base():
         for field in fields(self):
             if not isinstance(field.default, dataclasses._MISSING_TYPE) and getattr(self, field.name) is None:
                 setattr(self, field.name, field.default)
+
+
+@dataclass
+class BaseObject(Base):
+
+    class_: str = ""
+    properties: list = field(default_factory=list)

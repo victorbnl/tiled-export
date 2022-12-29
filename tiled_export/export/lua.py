@@ -1,7 +1,22 @@
 import dataclasses
 
-from tiled_export.map.export._common import *
-from tiled_export.utils import hex_to_rgb
+from tiled_export.export._common import *
+
+
+def hex_to_rgb(color):
+    """Convert hexadecimal color to RGB"""
+
+    color = color.lstrip("#")
+
+    r_hex = color[0:2]
+    g_hex = color[2:4]
+    b_hex = color[4:6]
+
+    r = int(r_hex, 16)
+    g = int(g_hex, 16)
+    b = int(b_hex, 16)
+
+    return (r, g, b)
 
 
 class LuaEncoder():
@@ -44,12 +59,11 @@ class LuaEncoder():
         if isinstance(obj, list) or isinstance(obj, tuple):
 
             # Matrix
-            if all([isinstance(v, list) for v in obj]):
+            if len(obj) > 0 and all([isinstance(v, list) for v in obj]):
 
                 content = ""
                 for i, row in enumerate(obj):
                     for j, element in enumerate(row):
-                        # separator = ", " if i != len(obj) - 1 or j != len(row) - 1 else ""
                         separator = ""
                         if i != len(obj) - 1 or j != len(row) - 1:
                             separator += ","
@@ -67,16 +81,22 @@ class LuaEncoder():
             # Normal list
             else:
 
-                content = ""
-                for i, v in enumerate(obj):
-                    suffix = f",{self.newline}" if i != len(obj) - 1 else ""
-                    v = self.encode(v, _depth)
-                    content += f"{v}{suffix}"
-                content = self.indent(content)
+                string = "{"
 
-                string = "{" + self.newline
-                string += content
-                string += self.newline + "}"
+                if len(obj) > 0:
+
+                    content = ""
+                    for i, v in enumerate(obj):
+                        suffix = f",{self.newline}" if i != len(obj) - 1 else ""
+                        v = self.encode(v, _depth)
+                        content += f"{v}{suffix}"
+                    content = self.indent(content)
+
+                    string += self.newline
+                    string += content
+                    string += self.newline
+
+                string += "}"
 
                 return string
 
@@ -103,15 +123,18 @@ class LuaEncoder():
         raise ValueError("Can't encode type: " + type(obj).__name__)
 
 
-def export(tiledmap):
-    """Export tiledmap in Lua format"""
+def export(obj):
+    """Exports Tiled object in Lua format"""
 
-    dictmap = tiledmap_to_dict(tiledmap)
+    # Convert Tiled object to dictionary
+    dict_ = tiled_to_dict(obj)
 
-    dictmap["backgroundcolor"] = hex_to_rgb(tiledmap.backgroundcolor)
+    # Fix color
+    if "backgroundcolor" in dict_:
+        dict_["backgroundcolor"] = hex_to_rgb(dict_["backgroundcolor"])
 
+    # Export to Lua
     encoder = LuaEncoder(indentation=2)
-    result = encoder.encode(dictmap)
+    result = encoder.encode(dict_)
 
-    print(result)
     return result

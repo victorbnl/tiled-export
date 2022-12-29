@@ -1,4 +1,6 @@
-class Encoder:
+from tiled_export.export._common import tiled_to_dict
+
+class JsonEncoder:
 
     def __init__(self, indent=1):
         self.indentation = " " * indent
@@ -83,3 +85,15 @@ class Encoder:
             return f"\"{obj}\""
 
         raise ValueError(type(obj).__name__)
+
+
+def export(obj):
+    """Exports a Tiled object to JSON"""
+
+    # Convert Tiled object to dictionary
+    dict_ = tiled_to_dict(obj)
+
+    # Encode it in json
+    result = JsonEncoder(indent=2).encode(dict_)
+
+    return result

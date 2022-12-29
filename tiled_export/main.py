@@ -1,10 +1,7 @@
 import argparse
 import importlib
 
-from tiled_export import utils
-
-from tiled_export.map.convert import convert_map
-from tiled_export.tileset.convert import convert_tileset
+from tiled_export.convert import convert
 
 
 def main():
@@ -17,22 +14,14 @@ def main():
     argparser.add_argument("-f", "--format", help="file to export data in")
     args = argparser.parse_args()
 
-    # Check if map or tileset
-    input_format = utils.get_file_ext(args.input_file)
-
     # If not given, assume export format from output file extension
     if args.format:
         output_format = args.format
     else:
-        output_format = utils.get_file_ext(args.output_file)
+        output_format = args.output_file.split(".")[-1]
 
     # Convert the file
-    if input_format == "tmx":
-        result = convert_map(args.input_file, output_format)
-    elif input_format == "tsx":
-        result = convert_tileset(args.input_file, output_format)
-    else:
-        raise ValueError(f"Invalid input file format: {input_format}")
+    result = convert(args.input_file, output_format)
 
     # Write output
     with open(args.output_file, 'w') as ofstream:
