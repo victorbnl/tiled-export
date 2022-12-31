@@ -1,6 +1,5 @@
 import dataclasses
 from dataclasses import dataclass, field, fields
-from pydoc import locate
 
 
 @dataclass
@@ -8,10 +7,10 @@ class Base():
 
     def __post_init__(self):
 
-        def cast(value, type):
-            if type == bool:
+        def cast(value, type_):
+            if type_ == bool:
                 return False if value == "0" else True
-            return locate(type.__name__)(value)
+            return type_(value)
 
         # Cast values to right types
         for field in fields(self):

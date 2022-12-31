@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 
 from tiled_export.types.tiled._base import *
+from tiled_export.types.qt.color import Color
 
 
 @dataclass
@@ -13,7 +14,7 @@ class Map(BaseObject):
     renderorder: str = None
     compressionlevel: int = -1
     infinite: bool = None
-    backgroundcolor: str = None
+    backgroundcolor: Color = None
 
     nextlayerid: int = None
     nextobjectid: int = None

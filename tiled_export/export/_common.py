@@ -1,33 +1,58 @@
-import dataclasses
+from abc import ABC, abstractmethod
 from dataclasses import fields
 
-from tiled_export.parse_data import parse_data
-from tiled_export.types import *
+
+def get_items(obj):
+    """Returns a list of items from a dataclass"""
+
+    return [
+        (
+            field.name.rstrip("_"),
+            getattr(obj, field.name)
+        )
+        for field in fields(obj)
+    ]
 
 
-def tiled_to_dict(obj, _layer=None, _field_name=None):
-    """Convert Tiled object to dictionary (recursive)"""
+class Encoder(ABC):
 
-    # Layers
-    if isinstance(obj, TileLayer):
-        _layer = obj
+    def __init__(self, indent=2):
+        """Encodes an object"""
 
-    # Lists
-    if isinstance(obj, list):
-        return [tiled_to_dict(v, _layer) for v in obj]
+        self.indentation = indent
+        self.newline = "\n" if indent else ""
 
-    # Dataclasses
-    if dataclasses.is_dataclass(obj):
-        dict_ = {}
-        for field in fields(obj):
-            k, v = field.name, getattr(obj, field.name)
-            k = k.rstrip("_")
-            if v != None:
-                dict_[k] = tiled_to_dict(v, _layer, field.name)
-        return dict_
+    def indent(self, string):
+        """Indents the given string once"""
 
-    # Data field
-    if _field_name == "data" and _layer.encoding == "csv":
-        return parse_data(obj, _layer.encoding, _layer.compression, _layer.width, _layer.height)
+        indentation = " " * self.indentation
 
-    return obj
+        return ''.join(
+            f"{indentation}{line}"
+            for line in string.splitlines(True)
+        )
+
+    def separator(self):
+        """Returns a list/dict separator"""
+
+        return f",{self.newline}"
+
+    def block(self, content, delimiters):
+        """Returns the given content inside a properly indented and delimited block"""
+
+        string = delimiters[0]
+
+        if content:
+            string += self.newline
+            string += self.indent(content)
+            string += self.newline
+
+        string += delimiters[1]
+
+        return string
+
+    @abstractmethod
+    def encode(self, obj):
+        """Encodes an object into a string"""
+
+        raise ValueError(f"Cannot encode type: {type(obj).__name__}")
