@@ -1,10 +1,10 @@
 from pydantic import BaseModel
 
-from typing import Optional, Literal
+from typing import Optional, Union, Literal
 from pydantic import NonNegativeInt
 from tiled_export.types.qt import Color
 from tiled_export.types.tiled.tileset import Tileset
-from tiled_export.types.tiled.layer import TileLayer
+from tiled_export.types.tiled.layer import TileLayer, ObjectGroup
 
 
 class Map(BaseModel):
@@ -36,4 +36,4 @@ class Map(BaseModel):
 
     properties: list = []
     tilesets: list[Tileset] = []
-    layers: list[TileLayer] = []
+    layers: list[Union[TileLayer, ObjectGroup]] = []

@@ -20,7 +20,7 @@ class ObjectGroup(BaseModel):
     width: Optional[int]
     height: Optional[int]
 
-    opacity: conint(ge=0, le=1)
+    opacity: conint(ge=0, le=1) = 1
     visible: bool = True
     tintcolor: Optional[Color]
 

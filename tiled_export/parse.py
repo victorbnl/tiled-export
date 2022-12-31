@@ -29,8 +29,12 @@ def parse_node(node):
             if isinstance(child, Tileset):
                 tiledmap.tilesets.append(child)
 
-            # Child is layer
+            # Child is a tile layer
             if isinstance(child, TileLayer):
+                tiledmap.layers.append(child)
+
+            # Child is an object group
+            if isinstance(child, ObjectGroup):
                 tiledmap.layers.append(child)
 
         return tiledmap
@@ -149,3 +153,21 @@ def parse_node(node):
     # Node is a tile layer data chunk
     if node.tag() == "chunk":
         return Chunk(data=node.text(), **node.attrs())
+
+    # Node is an object group
+    if node.tag() == "objectgroup":
+
+        attrs = node.attrs()
+
+        objects = []
+        for child_node in node.children():
+            child = parse_node(child_node)
+
+            if isinstance(child, Object):
+                objects.append(child)
+
+        return ObjectGroup(objects=objects, **attrs)
+
+    # Node is an object group object
+    if node.tag() == "object":
+        return Object(**node.attrs())
