@@ -136,10 +136,12 @@ def parse_node(node):
 
         # Get data
         layer.data = data_node.text() or None
-        # For data children (supposedly none or chunks)
+        # For data children (supposedly none or chunks if any)
         for child_node in data_node.children():
             child = parse_node(child_node)
             if isinstance(child, Chunk):
+                if layer.chunks == None:
+                    layer.chunks = []
                 layer.chunks.append(child)
 
         return layer

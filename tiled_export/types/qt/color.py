@@ -8,6 +8,16 @@ class Color:
 
         self.hexcode = hexcode.lstrip("#")
 
+    @classmethod
+    def __get_validators__(cls):
+
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, v):
+
+        return True
+
     def hex(self):
         """Returns the color as an hex string"""
 

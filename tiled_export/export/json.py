@@ -1,4 +1,4 @@
-from dataclasses import is_dataclass
+from pydantic import BaseModel
 
 from tiled_export.export._common import Encoder, get_items
 from tiled_export.types import *
@@ -34,7 +34,7 @@ class JsonEncoder(Encoder):
             return self.encode(obj.hex(), _state)
 
         # Dataclass
-        if is_dataclass(obj):
+        if issubclass(type(obj), BaseModel):
 
             lines = []
             for k, v in get_items(obj):

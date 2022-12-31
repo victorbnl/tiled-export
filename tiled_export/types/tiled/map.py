@@ -1,30 +1,39 @@
-from dataclasses import dataclass, field
+from pydantic import BaseModel
 
-from tiled_export.types.tiled._base import *
-from tiled_export.types.qt.color import Color
+from typing import Optional, Literal
+from pydantic import NonNegativeInt
+from tiled_export.types.qt import Color
+from tiled_export.types.tiled.tileset import Tileset
+from tiled_export.types.tiled.layer import TileLayer
 
 
-@dataclass
-class Map(BaseObject):
+class Map(BaseModel):
 
-    version: str = None
-    tiledversion: str = None
+    version: str
+    tiledversion: str
 
-    orientation: str = None
-    renderorder: str = None
-    compressionlevel: int = -1
-    infinite: bool = None
+    orientation: Literal["unknown", "orthogonal", "isometric", "staggered", "horizontal"]
+    renderorder: Literal["right-down", "right-up", "left-down", "left-up"] = "right-down"
+
+    width: NonNegativeInt = 0
+    height: NonNegativeInt = 0
+
+    tilewidth: NonNegativeInt
+    tileheight: NonNegativeInt
+
+    hexsidelength: Optional[int]
+
+    staggeraxis: Optional[Literal["x", "y"]]
+    staggerindex: Optional[Literal["even", "odd"]]
+
     backgroundcolor: Color = None
 
-    nextlayerid: int = None
-    nextobjectid: int = None
+    nextlayerid: Optional[NonNegativeInt]
+    nextobjectid: Optional[NonNegativeInt]
 
-    width: int = None
-    height: int = None
+    compressionlevel: int = -1
+    infinite: bool
 
-    tilewidth: int = None
-    tileheight: int = None
-
-    tilesets: list = field(default_factory=list)
-
-    layers: list = field(default_factory=list)
+    properties: list = []
+    tilesets: list[Tileset] = []
+    layers: list[TileLayer] = []

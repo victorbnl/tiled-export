@@ -1,15 +1,17 @@
-from dataclasses import dataclass, field
+from pydantic import BaseModel
 
-from tiled_export.types.tiled._base import *
+from typing import Optional
+from pydantic import conlist
+from tiled_export.types.tiled.tileset.wangset.wangcolor import WangColor
 
 
-@dataclass
-class Wangset(BaseObject):
+class Wangset(BaseModel):
 
-    name: str = ""
+    name: str
+    class_: str = ""
 
-    type_: str = None
-    tile: int = None
+    type_: Optional[int]
+    tile: int
 
-    colors: list = field(default_factory=list)
-    wangtiles: list = field(default_factory=list)
+    colors: conlist(WangColor, max_items=255)
+    wangtiles: list = []

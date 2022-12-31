@@ -1,12 +1,12 @@
-from dataclasses import dataclass
+from pydantic import BaseModel
 
-from tiled_export.types.tiled._base import *
+from typing import Literal
+from pydantic import NonNegativeInt
 
 
-@dataclass
-class Grid(Base):
+class Grid(BaseModel):
 
-    orientation: str = None
+    orientation: Literal["unknown", "orthogonal", "isometric", "staggered", "horizontal"]
 
-    width: int = None
-    height: int = None
+    width: NonNegativeInt
+    height: NonNegativeInt

@@ -5,12 +5,15 @@ from dataclasses import fields
 def get_items(obj):
     """Returns a list of items from a dataclass"""
 
+    print()
+    print(obj)
+
     return [
         (
-            field.name.rstrip("_"),
-            getattr(obj, field.name)
+            k.rstrip("_"),
+            v
         )
-        for field in fields(obj)
+        for k, v in obj
     ]
 
 

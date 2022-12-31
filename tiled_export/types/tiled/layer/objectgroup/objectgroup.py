@@ -1,21 +1,36 @@
-from dataclasses import dataclass
+from pydantic import BaseModel
 
-from tiled_export.types.tiled._base import *
+from typing import Optional, Literal
+from pydantic import PositiveInt, NonNegativeInt, conint
+from tiled_export.types import Color
+from tiled_export.types.tiled.layer.objectgroup.object import Object
 
 
-@dataclass
-class ObjectGroup(Base):
+class ObjectGroup(BaseModel):
 
-    id_: int = None
-    name: str = None
+    id_: PositiveInt
+    name: str = ""
+    class_: str = ""
 
-    opacity: int = 1
-
-    visible: bool = True
+    color: Optional[Color]
 
     x: int = 0
     y: int = 0
 
-    draworder: str = "topdown"
+    width: Optional[int]
+    height: Optional[int]
 
-    objects: list = None
+    opacity: conint(ge=0, le=1)
+    visible: bool = True
+    tintcolor: Optional[Color]
+
+    offsetx: Optional[NonNegativeInt] = 0
+    offsety: Optional[NonNegativeInt] = 0
+
+    parallaxx: Optional[NonNegativeInt] = 1
+    parallaxy: Optional[NonNegativeInt] = 1
+
+    draworder: Literal["index", "topdown"] = "topdown"
+
+    # properties
+    objects: list[Object] = []

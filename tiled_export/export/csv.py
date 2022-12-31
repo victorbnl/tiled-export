@@ -2,6 +2,7 @@ import csv
 import io
 
 from tiled_export.types import Map, Tileset, TileLayer
+from tiled_export.parse_data import parse_data
 
 
 def get_map_size(tiledmap):
@@ -129,16 +130,15 @@ class Table:
         for layer in tiledmap.layers:
             if isinstance(layer, TileLayer):
                 if tiledmap.infinite:
-                    for chunk, group in zip(layer.chunks, layer):
-                        for y, row in enumerate(group):
+                    for chunk in layer.chunks:
+                        for y, row in enumerate(parse_data(chunk.data, layer.encoding, layer.compression, chunk.width, chunk.height)):
                             for x, gid in enumerate(row):
                                 if gid != 0:
                                     table.write(chunk.x+x, chunk.y+y, gid)
                 else:
-                    for group in layer:
-                        for y, row in enumerate(group):
-                            for x, gid in enumerate(row):
-                                table.write(x, y, gid)
+                    for y, row in enumerate(parse_data(layer.data, layer.encoding, layer.compression, layer.width, layer.height)):
+                        for x, gid in enumerate(row):
+                            table.write(x, y, gid)
 
         return table
 

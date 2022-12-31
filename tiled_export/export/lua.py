@@ -1,4 +1,4 @@
-from dataclasses import is_dataclass
+from pydantic import BaseModel
 
 from tiled_export.export._common import Encoder, get_items
 from tiled_export.types import *
@@ -40,7 +40,7 @@ class LuaEncoder(Encoder):
             return "{" + ", ".join(self.encode(v, _depth, _state) for v in obj.rgb()) + "}"
 
         # Dataclass
-        if is_dataclass(obj):
+        if issubclass(type(obj), BaseModel):
 
             lines = []
             for k, v in get_items(obj):

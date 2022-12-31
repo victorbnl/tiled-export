@@ -1,15 +1,12 @@
-from dataclasses import dataclass
-
-from tiled_export.types.tiled._base import *
+from pydantic import BaseModel
 
 
-@dataclass
-class Chunk(Base):
+class Chunk(BaseModel):
 
-    x: int = None
-    y: int = None
+    x: int
+    y: int
 
-    width: int = None
-    height: int = None
+    width: int
+    height: int
 
-    data: str = None
+    data: str

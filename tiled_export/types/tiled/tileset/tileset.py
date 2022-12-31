@@ -1,38 +1,37 @@
-from dataclasses import dataclass, field
+from pydantic import BaseModel
 
-from tiled_export.types.tiled._base import *
+from typing import Optional, Literal
+from pydantic import PositiveInt, NonNegativeInt
 from tiled_export.types.qt import Point
 from tiled_export.types.tiled.tileset.grid import Grid
+from tiled_export.types.tiled.tileset.tile import Tile
+from tiled_export.types.tiled.tileset.wangset import Wangset
 
 
-@dataclass
-class Tileset(BaseObject):
+class Tileset(BaseModel):
 
     name: str = ""
 
-    version: str = None
-    tiledversion: str = None
+    firstgid: PositiveInt
+    filename: Optional[str]
 
-    firstgid: int = None
-    filename: str = None
+    tilewidth: Optional[NonNegativeInt]
+    tileheight: Optional[NonNegativeInt]
 
-    tilewidth: int = None
-    tileheight: int = None
+    spacing: Optional[NonNegativeInt]
+    margin: Optional[NonNegativeInt]
 
-    tilecount: int = None
+    tilecount: Optional[NonNegativeInt]
 
-    spacing: int = 0
-    margin: int = 0
-    columns: int = 0
+    columns: Optional[NonNegativeInt]
 
-    objectalignment: str = "unspecified"
-    tilerendersize: str = "tile"
-    fillmode: str = "stretch"
+    objectalignment: Optional[Literal["unspecified", "topleft", "top", "topright", "left", "center", "right", "bottomleft", "bottom", "bottomright"]] = "unspecified"
+    tilerendersize: Optional[Literal["tile", "grid"]] = "tile"
+    fillmode: Optional[Literal["stretch", "preserve-aspect-fit"]] = "stretch"
 
-    tileoffset: Point = Point()
+    tileoffset: Optional[Point]
 
-    grid: Grid = None
+    grid: Optional[Grid]
 
-    tiles: list = field(default_factory=list)
-
-    wangsets: list = field(default_factory=list)
+    tiles: Optional[list[Tile]]
+    wangsets: Optional[list[Wangset]]

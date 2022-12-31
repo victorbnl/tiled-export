@@ -1,13 +1,12 @@
-from dataclasses import dataclass
+from pydantic import BaseModel
 
-from tiled_export.types.tiled._base import *
-from tiled_export.types.qt.color import Color
+from tiled_export.types.qt import Color
 
 
-@dataclass
-class WangColor(BaseObject):
+class WangColor(BaseModel):
 
-    name: str = ""
-    color: Color = None
-    tile: int = None
-    probability: int = None
+    name: str
+    class_: str = ""
+    color: Color
+    tile: int
+    probability: int = 0

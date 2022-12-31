@@ -1,14 +1,13 @@
-from dataclasses import dataclass
+from pydantic import BaseModel
 
-from tiled_export.types.tiled._base import *
+from typing import Optional
 
 
-@dataclass
-class Tile(Base):
+class Tile(BaseModel):
 
-    id_: int = None
+    id_: Optional[int]
 
-    image: str = None
+    image: Optional[str]
 
-    imagewidth: int = None
-    imageheight: int = None
+    imagewidth: Optional[int]
+    imageheight: Optional[int]
