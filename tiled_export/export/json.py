@@ -1,5 +1,6 @@
 from tiled_export.export._common import tiled_to_dict
 
+
 class JsonEncoder:
 
     def __init__(self, indent=1):
