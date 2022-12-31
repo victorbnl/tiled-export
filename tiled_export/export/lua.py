@@ -2,11 +2,12 @@ from dataclasses import is_dataclass
 
 from tiled_export.export._common import Encoder, get_items
 from tiled_export.types import *
+from tiled_export.parse_data import parse_data
 
 
 class LuaEncoder(Encoder):
 
-    def encode(self, obj, _depth=0):
+    def encode(self, obj, _depth=0, _state={}):
         """Encode dictionary to Lua"""
 
         # Add "return" keyword at the beginning
@@ -14,26 +15,48 @@ class LuaEncoder(Encoder):
             _depth += 1
             return "return " + self.encode(obj, _depth)
 
-        # Color
-        if isinstance(obj, Color):
+        # Layer (get encoding)
+        if isinstance(obj, TileLayer):
+            _state["data_encoding"] = obj.encoding
 
-            return "{" + ", ".join(self.encode(v, _depth) for v in (obj.r, obj.g, obj.b)) + "}"
+        # Data (parse it)
+        if isinstance(obj, str) and _state.get("field_name", None) == "data" and _state["data_encoding"] == "csv":
 
-        # Dataclass
-        if is_dataclass(obj):
+            parsed = parse_data(obj, encoding="csv")
 
-            content = self.separator().join(
-                f"{k} = {self.encode(v, _depth)}"
-                for k, v in get_items(obj)
-                if v != None
+            content = ",\n".join(
+                ", ".join(
+                    self.encode(v, _depth, _state)
+                    for v in line
+                )
+                for line in parsed
             )
 
             return self.block(content, ("{", "}"))
 
+        # Color
+        if isinstance(obj, Color):
+
+            return "{" + ", ".join(self.encode(v, _depth, _state) for v in (obj.r, obj.g, obj.b)) + "}"
+
+        # Dataclass
+        if is_dataclass(obj):
+
+            lines = []
+            for k, v in get_items(obj):
+                if v != None:
+                    _state["field_name"] = k
+                    lines.append(f"{k} = {self.encode(v, _depth, _state)}")
+            _state["field_name"] = None
+            content = self.separator().join(lines)
+
+            return self.block(content, ("{", "}"))
+
+        # List
         if isinstance(obj, list):
 
             content = self.separator().join(
-                self.encode(v, _depth) for v in obj
+                self.encode(v, _depth, _state) for v in obj
             )
 
             return self.block(content, ("{", "}"))
