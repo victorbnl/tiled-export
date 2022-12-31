@@ -7,9 +7,12 @@ class JsonEncoder:
         self.nl = "\n" if indent > 0 else ""
 
     def indent(self, s):
+        """Adds a level of indentation to a string"""
+
         return ''.join(f"{self.indentation}{l}" for l in s.splitlines(True))
 
     def encode(self, obj):
+        """Encodes a Python object to a JSON string"""
 
         # Dict
         if isinstance(obj, dict):
