@@ -29,6 +29,10 @@ class JsonEncoder(Encoder):
         if isinstance(obj, TileLayer):
             _state["encoding"] = obj.encoding
 
+        # Color
+        if isinstance(obj, Color):
+            return self.encode(obj.hex(), _state)
+
         # Dataclass
         if is_dataclass(obj):
 

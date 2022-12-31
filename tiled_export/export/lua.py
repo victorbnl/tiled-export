@@ -37,7 +37,7 @@ class LuaEncoder(Encoder):
         # Color
         if isinstance(obj, Color):
 
-            return "{" + ", ".join(self.encode(v, _depth, _state) for v in (obj.r, obj.g, obj.b)) + "}"
+            return "{" + ", ".join(self.encode(v, _depth, _state) for v in obj.rgb()) + "}"
 
         # Dataclass
         if is_dataclass(obj):
