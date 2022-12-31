@@ -10,6 +10,10 @@ class JsonEncoder(Encoder):
     def encode(self, obj, _state={}):
         """Encodes an object into a JSON string"""
 
+        # Add type: map if it's a map
+        if isinstance(obj, Map):
+            obj.type_ = "map"
+
         # Data (parse it)
         if isinstance(obj, str) and _state.get("field_name", None) == "data" and _state["encoding"] == "csv":
 

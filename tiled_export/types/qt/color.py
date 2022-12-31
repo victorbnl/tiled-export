@@ -16,7 +16,7 @@ class Color:
     @classmethod
     def validate(cls, v):
 
-        return True
+        return cls(v)
 
     def hex(self):
         """Returns the color as an hex string"""

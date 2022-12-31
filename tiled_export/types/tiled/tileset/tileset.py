@@ -13,7 +13,7 @@ class Tileset(BaseModel):
     name: str = ""
 
     firstgid: PositiveInt
-    filename: Optional[str]
+    source: Optional[str]
 
     tilewidth: Optional[NonNegativeInt]
     tileheight: Optional[NonNegativeInt]
@@ -25,9 +25,9 @@ class Tileset(BaseModel):
 
     columns: Optional[NonNegativeInt]
 
-    objectalignment: Optional[Literal["unspecified", "topleft", "top", "topright", "left", "center", "right", "bottomleft", "bottom", "bottomright"]] = "unspecified"
-    tilerendersize: Optional[Literal["tile", "grid"]] = "tile"
-    fillmode: Optional[Literal["stretch", "preserve-aspect-fit"]] = "stretch"
+    objectalignment: Optional[Literal["unspecified", "topleft", "top", "topright", "left", "center", "right", "bottomleft", "bottom", "bottomright"]]
+    tilerendersize: Optional[Literal["tile", "grid"]]
+    fillmode: Optional[Literal["stretch", "preserve-aspect-fit"]]
 
     tileoffset: Optional[Point]
 

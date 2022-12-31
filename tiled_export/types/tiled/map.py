@@ -34,6 +34,8 @@ class Map(BaseModel):
     compressionlevel: int = -1
     infinite: bool
 
-    properties: list = []
+    properties: Optional[list]
     tilesets: list[Tileset] = []
     layers: list[Union[TileLayer, ObjectGroup]] = []
+
+    type_: Optional[str]
