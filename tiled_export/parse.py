@@ -41,6 +41,10 @@ def parse_node(node):
             if isinstance(child, ImageLayer):
                 tiledmap.layers.append(child)
 
+            # Child is a group layer
+            if isinstance(child, Group):
+                tiledmap.layers.append(child)
+
         return tiledmap
 
     # Node is a tileset
@@ -193,3 +197,15 @@ def parse_node(node):
         attrs = node.attrs() | image_attrs
 
         return ImageLayer(**attrs)
+
+    # Node is a group layer
+    if node.tag() == "group":
+
+        layers = []
+        for child_node in node.children():
+            child = parse_node(child_node)
+
+            if isinstance(child, Layer):
+                layers.append(child)
+
+        return Group(layers=layers, **node.attrs())

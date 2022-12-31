@@ -1,34 +1,19 @@
-from pydantic import BaseModel
+from tiled_export.types.tiled.layer.layer import Layer
 
 from typing import Optional, Literal
-from pydantic import PositiveInt, conint
-from pydantic.color import Color
+from pydantic import PositiveInt, NonNegativeInt
 
 from tiled_export.types.tiled.layer.tilelayer.chunk import Chunk
 
 
-class TileLayer(BaseModel):
+class TileLayer(Layer):
 
     id_: PositiveInt
     name: str = ""
     class_: str = ""
 
-    x: int = 0
-    y: int = 0
-
-    width: int
-    height: int
-
-    opacity: conint(ge=0, le=1) = 1
-    visible: bool = True
-
-    tintcolor: Optional[Color]
-
-    offsetx: int = 0
-    offsety: int = 0
-
-    parallaxx: int = 1
-    parallaxy: int = 1
+    width: NonNegativeInt
+    height: NonNegativeInt
 
     encoding: Optional[Literal["csv", "base64"]]
     compression: Optional[Literal["uncompressed", "gzip", "zlib", "zstd"]]
