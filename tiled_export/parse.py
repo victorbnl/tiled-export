@@ -37,6 +37,10 @@ def parse_node(node):
             if isinstance(child, ObjectGroup):
                 tiledmap.layers.append(child)
 
+            # Child is an image layer
+            if isinstance(child, ImageLayer):
+                tiledmap.layers.append(child)
+
         return tiledmap
 
     # Node is a tileset
@@ -171,3 +175,20 @@ def parse_node(node):
     # Node is an object group object
     if node.tag() == "object":
         return Object(**node.attrs())
+
+    # Node is an image layer
+    if node.tag() == "imagelayer":
+
+        image_attrs = {}
+        for child_node in node.children():
+            if child_node.tag() == "image":
+                image_attrs = child_node.attrs()
+                break
+
+        if "trans" in image_attrs:
+            image_attrs["transparentcolor"] = image_attrs["trans"]
+            del image_attrs["trans"]
+
+        attrs = node.attrs() | image_attrs
+
+        return ImageLayer(**attrs)

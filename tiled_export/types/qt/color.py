@@ -21,7 +21,7 @@ class Color:
     def hex(self):
         """Returns the color as an hex string"""
 
-        return self.hexcode
+        return f"#{self.hexcode}"
 
     def rgb(self):
         """Returns the color as an RGB tuple"""
