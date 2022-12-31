@@ -5,9 +5,6 @@ from dataclasses import fields
 def get_items(obj):
     """Returns a list of items from a dataclass"""
 
-    print()
-    print(obj)
-
     return [
         (
             k.rstrip("_"),
