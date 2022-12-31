@@ -185,9 +185,10 @@ def parse_node(node):
                 image_attrs = child_node.attrs()
                 break
 
-        if "trans" in image_attrs:
-            image_attrs["transparentcolor"] = image_attrs["trans"]
-            del image_attrs["trans"]
+        for old_name, new_name in (("source", "image"), ("trans", "transparentcolor")):
+            if old_name in image_attrs:
+                image_attrs[new_name] = image_attrs[old_name]
+                del image_attrs[old_name]
 
         attrs = node.attrs() | image_attrs
 

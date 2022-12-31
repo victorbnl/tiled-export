@@ -9,13 +9,13 @@ class ImageLayer(BaseModel):
 
     id_: PositiveInt
     name: str = ""
-    class_: str = ""
+    class_: Optional[str]
 
-    offsetx: int = 0
-    offsety: int = 0
+    offsetx: Optional[int]
+    offsety: Optional[int]
 
-    parallaxx: int = 1
-    parallaxy: int = 1
+    parallaxx: Optional[int]
+    parallaxy: Optional[int]
 
     x: int = 0
     y: int = 0
@@ -24,9 +24,9 @@ class ImageLayer(BaseModel):
     visible: bool = True
     tintcolor: Optional[Color]
 
-    repeatx: bool = False
-    repeaty: bool = False
+    repeatx: Optional[bool]
+    repeaty: Optional[bool]
 
     format_: Optional[str]
-    source: Optional[str]
+    image: Optional[str]
     transparentcolor: Optional[Color]
