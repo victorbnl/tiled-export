@@ -80,11 +80,13 @@ class LuaEncoder(Encoder):
         super().encode(obj)
 
 
-def export(obj):
-    """Exports Tiled object in Lua format"""
+def export(obj, filename):
+    """Exports a Tiled object to a Lua file"""
 
-    # Export to Lua
+    # Convert object to Lua
     encoder = LuaEncoder(indent=2)
     result = encoder.encode(obj)
 
-    return result
+    # Write file
+    with open(filename, 'w') as luafile:
+        luafile.write(result)

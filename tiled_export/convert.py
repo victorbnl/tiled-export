@@ -3,13 +3,14 @@ from importlib import import_module
 from tiled_export.parse import parse
 
 
-def convert(filename, format):
+def convert(source_file, format, dest_file):
     """Converts the file with given filename to given format"""
 
-    # Get Tiled object
-    obj = parse(filename)
+    # Parse XML file
+    obj = parse(source_file)
 
-    # Export it
-    result = import_module(f"tiled_export.export.{format}").export(obj)
+    # Write it
+    exporter = import_module(f"tiled_export.export.{format}")
+    result = exporter.export(obj, dest_file)
 
     return result

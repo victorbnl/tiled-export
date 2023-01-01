@@ -78,11 +78,13 @@ class JsonEncoder(Encoder):
         super().encode(obj)
 
 
-def export(obj):
-    """Exports a Tiled object to JSON"""
+def export(obj, filename):
+    """Exports a Tiled object to a JSON file"""
 
-    # Convert Tiled object to dictionary
+    # Convert Tiled object to JSON
     encoder = JsonEncoder(indent=2)
     result = encoder.encode(obj)
 
-    return result
+    # Write file
+    with open(filename, 'w') as jsonfile:
+        jsonfile.write(result)

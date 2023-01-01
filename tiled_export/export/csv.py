@@ -1,162 +1,112 @@
 import csv
-import io
 
-from tiled_export.types import Map, Tileset, TileLayer
+from tiled_export.types import Map, TileLayer, Chunk
 from tiled_export.parse_data import parse_data
 
 
-def get_map_size(tiledmap):
-    """Get total size of a map"""
+def get_chunks(layer):
+    """Get every chunk of data from a layer"""
 
-    if not tiledmap.infinite:
-        return (tiledmap.width, tiledmap.height)
+    chunks = layer.chunks or []
+    if layer.data:
+        chunks.append(Chunk(data=layer.data, x=0, y=0, width=layer.width, height=layer.height))
 
+    return chunks
+
+
+def to_array(layer):
+    """Converts a Tiled layer to a list of lists of ints"""
+
+    # Get layer size
+    if not layer.chunks:
+        layer_size = (layer.width, layer.height)
     else:
         left = right = top = bottom = 0
-        for layer in tiledmap.layers:
-            for chunk in layer.chunks:
-                if chunk.x < left:
-                    left = chunk.x
-                if chunk.x + chunk.width > right:
-                    right = chunk.x + chunk.width
-                if chunk.y < top:
-                    top = chunk.y
-                if chunk.y + chunk.height > bottom:
-                    bottom = chunk.y + chunk.height
+        for chunk in layer.chunks:
+            left = min(left, chunk.x)
+            right = max(right, chunk.x + chunk.width)
+            top = min(top, chunk.y)
+            bottom = max(bottom, chunk.y + chunk.height)
+        layer_size = (right - left, bottom - top)
 
-        return (right - left, bottom - top)
+    # Get layer origin index
+    x = y = 0
+    if layer.chunks:
+        for chunk in layer.chunks:
+            x = min(x, chunk.x)
+            y = min(y, chunk.y)
+    x *= -1
+    y *= -1
+    origin = (x, y)
 
-
-def get_map_origin_index(tiledmap):
-    """Get index of map origin"""
-
-    if not tiledmap.infinite:
-        return (0, 0)
-
-    else:
-        x = y = 0
-
-        for layer in tiledmap.layers:
-            for chunk in layer.chunks:
-                if chunk.x < x:
-                    x = chunk.x
-                if chunk.y < y:
-                    y = chunk.y
-
-        x = (-1) * x
-        y = (-1) * y
-
-        return (x, y)
-
-
-def fix_gid(matrix, tilesets):
-    """Fix the GIDs to make them comply with Tiled CSV export format"""
-
-    # Get tile's tileset
-    tileset = tilesets[0]
-    for ts in tilesets:
-        if ts.firstgid > tileset.firstgid and gid >= ts.firstgid:
-            tileset = ts
-
-    return gid - tileset.firstgid
-
-
-class Table:
-
-    def __init__(self, origin: tuple, size: tuple):
-
-        self.origin = origin
-        self.size = size
-        self.array = [
-            [
-                -1
-                for _ in range(size[0])
-            ]
-            for _ in range(size[1])
+    # Create array of layer size
+    array = [
+        [
+            -1
+            for _ in range(layer_size[0])
         ]
+        for _ in range(layer_size[1])
+    ]
 
-    def write(self, x, y, v):
-        """Writes value v at coordinates (x, y)"""
-
-        self.array[self.origin[1]+y][self.origin[0]+x] = v
-
-    def get(self, x, y):
-        """Gets value at coordinates (x, y)"""
-
-        return self.array[self.origin[1]+y][self.origin[0]+x]
-
-    def autocrop(self):
-        """Crops a itself to leave no space around the map"""
-
-        crop_left = self.size[0]
-        crop_right = 0
-        crop_top = self.size[1]
-        crop_bottom = 0
-
-        # For each tile
-        for y, row in enumerate(self.array):
+    # Write layer data in table
+    for chunk in get_chunks(layer):
+        parsed_data = parse_data(chunk.data, layer.encoding, layer.compression, chunk.width, chunk.height)
+        for y, row in enumerate(parsed_data):
             for x, gid in enumerate(row):
+                array[origin[1]+chunk.y+y][origin[0]+chunk.x+x] = gid
 
-                # If tile is not empty
-                if gid != -1:
+    # Crop to content if infinite map
+    if not layer.data:
+        crop_left = layer_size[0]
+        crop_right = 0
+        crop_top = layer_size[1]
+        crop_bottom = 0
+        for y, row in enumerate(array):
+            for x, gid in enumerate(row):
+                if gid > 0:
+                    crop_left = min(crop_left, x)
+                    crop_right = max(crop_right, x)
+                    crop_top = min(crop_top, y)
+                    crop_bottom = max(crop_bottom, y)
+        array = [row[crop_left:crop_right+1] for row in array][crop_top:crop_bottom+1]
 
-                    if x < crop_left:
-                        crop_left = x
-
-                    if x > crop_right:
-                        crop_right = x
-
-                    if y < crop_top:
-                        crop_top = y
-
-                    if y > crop_bottom:
-                        crop_bottom = y
-
-        # Crop
-        self.array = self.array[crop_top:crop_bottom+1]
-        for i in range(len(self.array)):
-            self.array[i] = self.array[i][crop_left:crop_right+1]
-
-    @staticmethod
-    def from_tiledmap(tiledmap):
-
-        # Get origin and size
-        origin = get_map_origin_index(tiledmap)
-        size = get_map_size(tiledmap)
-
-        table = Table(origin, size)
-
-        # Flatten layers' data into table
-        for layer in tiledmap.layers:
-            if isinstance(layer, TileLayer):
-                if tiledmap.infinite:
-                    for chunk in layer.chunks:
-                        for y, row in enumerate(parse_data(chunk.data, layer.encoding, layer.compression, chunk.width, chunk.height)):
-                            for x, gid in enumerate(row):
-                                if gid != 0:
-                                    table.write(chunk.x+x, chunk.y+y, gid)
-                else:
-                    for y, row in enumerate(parse_data(layer.data, layer.encoding, layer.compression, layer.width, layer.height)):
-                        for x, gid in enumerate(row):
-                            table.write(x, y, gid)
-
-        return table
-
-    def rows(self):
-        return self.array
+    return array
 
 
-def export(obj):
-    """Exports a Tiled map to CSV"""
+def fix_gids(array, tilesets):
+    """Fix the GIDs to make them comply with Tiled's CSV format"""
 
+    for y, row in enumerate(array):
+        for x, gid in enumerate(row):
+            if gid != 0:
+                ts_firstgid = max([tileset.firstgid for tileset in tilesets if gid >= tileset.firstgid], default=-1)
+                array[y][x] = gid - ts_firstgid
+            else:
+                array[y][x] = -1
+
+    return array
+
+
+def export(obj, filename):
+    """Exports a Tiled map to a CSV file"""
+
+    # Given object must be a map
     if not isinstance(obj, Map):
         raise ValueError("Map expected for conversion to CSV")
 
-    table = Table.from_tiledmap(obj)
+    # Convert each layer to arrays
+    outfiles = []
+    for layer in obj.layers:
+        if isinstance(layer, TileLayer):
+            array = fix_gids(to_array(layer), obj.tilesets)
+            outfiles.append([layer.name, array])
 
-    table.autocrop()
+    if len(outfiles) == 1:
+        outfiles[0][0] = None
 
-    out = io.StringIO()
-    csv.writer(out).writerows(table.rows())
-
-    return out.getvalue()
+    # Write files
+    for suffix, content in outfiles:
+        name, ext = filename.split('.', 1)
+        outfilename = name + (f"_{suffix}" if suffix else "") + f".{ext}"
+        with open(outfilename, 'w') as outfile:
+            csv.writer(outfile).writerows(content)
