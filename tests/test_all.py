@@ -23,8 +23,8 @@ if not os.path.exists(OUTPUT_FOLDER):
     os.mkdir(OUTPUT_FOLDER)
 
 
-@mark.parametrize("filename", [os.path.basename(path) for path in glob.glob(f"{INPUT_FOLDER}/*") if re.match(r".*\.[tmx|tsx]", path)])
 @mark.parametrize("format_", ["csv", "json", "lua"])
+@mark.parametrize("filename", [os.path.basename(path) for path in glob.glob(f"{INPUT_FOLDER}/*") if re.match(r".*\.[tmx|tsx]", path)])
 def test_all(filename, format_):
 
     # Split base name and extension
