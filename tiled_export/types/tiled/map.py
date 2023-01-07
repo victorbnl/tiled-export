@@ -12,6 +12,8 @@ class Map(BaseModel):
     version: str
     tiledversion: str
 
+    class_: str = ""
+
     orientation: Literal["unknown", "orthogonal", "isometric", "staggered", "horizontal"]
     renderorder: Literal["right-down", "right-up", "left-down", "left-up"] = "right-down"
 

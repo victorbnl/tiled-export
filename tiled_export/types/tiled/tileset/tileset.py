@@ -10,7 +10,7 @@ from tiled_export.types.tiled.tileset.wangset import Wangset
 
 class Tileset(BaseModel):
 
-    name: Optional[str]
+    name: str = ""
 
     firstgid: Optional[PositiveInt]
     source: Optional[str]

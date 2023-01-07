@@ -10,11 +10,11 @@ class Layer(BaseModel):
     x: int = 0
     y: int = 0
 
-    offsetx: Optional[int]
-    offsety: Optional[int]
+    offsetx: int = 0
+    offsety: int = 0
 
-    parallaxx: Optional[int]
-    parallaxy: Optional[int]
+    parallaxx: int = 1
+    parallaxy: int = 1
 
     opacity: conint(ge=0, le=1) = 1
     visible: bool = True

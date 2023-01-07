@@ -1,6 +1,7 @@
 return {
   version = "1.9",
   tiledversion = "1.9.2",
+  class = "",
   orientation = "orthogonal",
   renderorder = "right-down",
   width = 10,
@@ -14,6 +15,7 @@ return {
   infinite = false,
   tilesets = {
     {
+      name = "",
       firstgid = 1,
       filename = "tileset.tsx"
     }
@@ -22,6 +24,10 @@ return {
     {
       x = 0,
       y = 0,
+      offsetx = 0,
+      offsety = 0,
+      parallaxx = 1,
+      parallaxy = 1,
       opacity = 1,
       visible = true,
       id = 1,
