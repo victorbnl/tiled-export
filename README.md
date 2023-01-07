@@ -22,24 +22,32 @@ python3 -m tiled_export --help
 
 Here are the features that are known (not) to be supported:
 
-- [x] Maps
-    - [x] Parse:
-        - [ ] XML encoding (deprecated)
-        - [x] CSV encoding
-        - [x] Base64 encoding
-            - [x] Uncompressed
-            - [x] gzip compressed
-            - [x] zlib compressed
-            - [x] Zstandard compressed
-    - [x] Export:
-        - [x] JSON
+- **Maps**
+    - **Features**
+        - [x] Infinite
+        - [x] Tile layers
+        - [ ] Object layers
+        - [ ] Image layers
+        - [ ] Group layers
+    - **Encodings**
+        - [ ] XML (deprecated)
         - [x] CSV
+        - [x] Base64
+            - [x] Uncompressed
+            - [x] gzip
+            - [x] zlib
+            - [x] Zstandard
+    - **Export formats**
+        - [x] CSV
+        - [x] JSON
+        - [x] Lua
         - [ ] JavaScript
         - [ ] GameMaker Studio 2
-        - [ ] GameMaker room
-        - [x] Lua
-- [x] Tilesets
-    - [x] Export:
+        - [ ] GameMaker Room
+- **Tilesets**
+    - **Features**
+        - [ ] Wangsets
+    - **Export formats**
         - [x] JSON
         - [x] Lua
 
