@@ -21,7 +21,7 @@ def to_dict(obj, _state={}):
         return to_dict("lua", _state)
 
     # Parse data
-    if _state.get("field_name", None) == "data" and _state["data_encoding"] == "csv":
+    if _state.get("field_name", None) == "data" and _state["data_encoding"] == "csv" and obj != None:
         return RowList(parse_data(obj, encoding="csv"))
 
     # Get layer encoding
