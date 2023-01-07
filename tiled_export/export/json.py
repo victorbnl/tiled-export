@@ -14,6 +14,10 @@ class RowList(list):
 def to_dict(obj, _state={}):
     """Converts a Tiled type to a dictionary"""
 
+    # Fix csv -> no encoding
+    if _state.get("field_name", None) == "encoding" and obj == "csv":
+        return None
+
     # Parse data
     if _state.get("field_name", None) == "data" and _state["data_encoding"] == "csv" and obj != None:
         return RowList(parse_data(obj, encoding="csv"))
@@ -30,12 +34,13 @@ def to_dict(obj, _state={}):
     types = {Map: "map"}
     if isinstance(obj, BaseModel):
         return {
-            k: to_dict(v, _state | {"field_name": k})
+            k: v
             for k, v in [
-                [k.rstrip("_"), v]
+                [k.rstrip("_"), to_dict(v, _state | {"field_name": k})]
                 for k, v in obj
                 if v != None
             ]
+            if v != None
         } | ({"type": types[type(obj)]} if type(obj) in types else {})
 
     # List
