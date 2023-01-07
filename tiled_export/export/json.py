@@ -1,3 +1,5 @@
+import json
+
 from pydantic import BaseModel
 
 from tiled_export.export._common import Encoder
@@ -100,6 +102,7 @@ class JsonEncoder(Encoder):
 
         # String
         if isinstance(obj, str):
+            obj = obj.replace('/', '\/')
             return f"\"{obj}\""
 
         super().encode(obj)
