@@ -50,27 +50,40 @@ def parse_node(node):
     # Node is a tileset
     if node.tag() == "tileset":
 
-        tileset = Tileset(**node.attrs())
+        # Sourced tileset
+        if "source" in node.attrs():
+            return SourceTileset(**node.attrs())
 
-        # Parse children
-        for child_node in node.children():
-            child = parse_node(child_node)
+        # Full tileset
+        else:
 
-            # Child is grid
-            if isinstance(child, Grid):
-                tileset.grid = child
+            tileset = FullTileset(**node.attrs())
 
-            # Child is tile
-            if isinstance(child, Tile):
-                if tileset.tiles != None:
-                    tileset.tiles.append(child)
+            # Parse children
+            tiles = []
+            wangsets = None
+            for child_node in node.children():
+                child = parse_node(child_node)
 
-            # Child is wangset list
-            if isinstance(child, list):
-                if isinstance(child[0], Wangset):
-                    tileset.wangsets = child
+                # Child is grid
+                if isinstance(child, Grid):
+                    tileset.grid = child
 
-        return tileset
+                # Child is tile
+                if isinstance(child, Tile):
+                    tiles.append(child)
+
+                # Child is wangset list
+                if isinstance(child, list):
+                    if isinstance(child[0], Wangset):
+                        wangsets = child
+
+            if tiles:
+                tileset.tiles = tiles
+            if wangsets:
+                tileset.wangsets = wangsets
+
+            return tileset
 
     # Node is a tileset grid
     if node.tag() == "grid":

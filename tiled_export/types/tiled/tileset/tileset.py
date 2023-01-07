@@ -9,27 +9,39 @@ from tiled_export.types.tiled.tileset.wangset import Wangset
 
 
 class Tileset(BaseModel):
+    pass
+
+
+class SourceTileset(Tileset):
 
     name: str = ""
+    firstgid: PositiveInt
+    source: str
 
-    firstgid: Optional[PositiveInt]
-    source: Optional[str]
 
-    tilewidth: Optional[NonNegativeInt]
-    tileheight: Optional[NonNegativeInt]
+class FullTileset(BaseModel):
 
-    spacing: Optional[NonNegativeInt]
-    margin: Optional[NonNegativeInt]
+    version: str
+    tiledversion: str
 
-    tilecount: Optional[NonNegativeInt]
+    name: str = ""
+    class_: str = ""
 
-    columns: Optional[NonNegativeInt]
+    tilewidth: NonNegativeInt
+    tileheight: NonNegativeInt
 
-    objectalignment: Optional[Literal["unspecified", "topleft", "top", "topright", "left", "center", "right", "bottomleft", "bottom", "bottomright"]]
-    tilerendersize: Optional[Literal["tile", "grid"]]
-    fillmode: Optional[Literal["stretch", "preserve-aspect-fit"]]
+    spacing: NonNegativeInt = 0
+    margin: NonNegativeInt = 0
 
-    tileoffset: Optional[Point]
+    tilecount: NonNegativeInt
+
+    columns: NonNegativeInt
+
+    objectalignment: Literal["unspecified", "topleft", "top", "topright", "left", "center", "right", "bottomleft", "bottom", "bottomright"] = "unspecified"
+    tilerendersize: Literal["tile", "grid"] = "tile"
+    fillmode: Literal["stretch", "preserve-aspect-fit"] = "stretch"
+
+    tileoffset: Point = Point(x=0, y=0)
 
     grid: Optional[Grid]
 

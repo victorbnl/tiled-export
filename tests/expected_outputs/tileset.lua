@@ -1,0 +1,45 @@
+return {
+  version = "1.9",
+  tiledversion = "1.9.2",
+  name = "tileset",
+  class = "",
+  tilewidth = 48,
+  tileheight = 48,
+  spacing = 0,
+  margin = 0,
+  tilecount = 3,
+  columns = 0,
+  objectalignment = "unspecified",
+  tilerendersize = "tile",
+  fillmode = "stretch",
+  tileoffset = {
+    x = 0,
+    y = 0
+  },
+  grid = {
+    orientation = "orthogonal",
+    width = 1,
+    height = 1
+  },
+  tiles = {
+    {
+      id = 2,
+      image = "img/dirt.png",
+      imagewidth = 48,
+      imageheight = 48
+    },
+    {
+      id = 0,
+      image = "img/grass.png",
+      imagewidth = 48,
+      imageheight = 48
+    },
+    {
+      id = 1,
+      image = "img/bricks.png",
+      imagewidth = 48,
+      imageheight = 48
+    }
+  },
+  luaversion = "5.1"
+}
