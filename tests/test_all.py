@@ -2,7 +2,6 @@ import pytest
 from pytest import mark
 
 import os
-import glob
 import re
 import filecmp
 
@@ -24,7 +23,7 @@ if not os.path.exists(OUTPUT_FOLDER):
 
 
 @mark.parametrize("format_", ["csv", "json", "lua"])
-@mark.parametrize("filename", [os.path.basename(path) for path in glob.glob(f"{INPUT_FOLDER}/*") if re.match(r".*\.[tmx|tsx]", path)])
+@mark.parametrize("filename", [filename for filename in os.listdir(INPUT_FOLDER) if re.match(r".*\.[tmx|tsx]", filename)])
 def test_all(filename, format_):
 
     # Split base name and extension
