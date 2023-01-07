@@ -29,7 +29,7 @@ def to_dict(obj, _state={}):
         return obj.hex()
 
     # Pydantic class
-    types = {Map: "map"}
+    types = {Map: "map", TileLayer: "tilelayer"}
     if isinstance(obj, BaseModel):
         return {
             k: v
