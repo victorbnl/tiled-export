@@ -14,8 +14,8 @@
   "infinite": false,
   "tilesets": [
     {
-      "source": "tileset.tsx",
-      "firstgid": 1
+      "firstgid": 1,
+      "source": "tileset.tsx"
     }
   ],
   "layers": [

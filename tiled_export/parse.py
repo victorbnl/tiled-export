@@ -50,13 +50,7 @@ def parse_node(node):
     # Node is a tileset
     if node.tag() == "tileset":
 
-        # Get attributes
-        attrs = node.attrs()
-        if "source" in attrs.keys():
-            attrs["filename"] = attrs["source"]
-            del attrs["source"]
-
-        tileset = Tileset(**attrs)
+        tileset = Tileset(**node.attrs())
 
         # Parse children
         for child_node in node.children():
@@ -68,7 +62,8 @@ def parse_node(node):
 
             # Child is tile
             if isinstance(child, Tile):
-                tileset.tiles.append(child)
+                if tileset.tiles != None:
+                    tileset.tiles.append(child)
 
             # Child is wangset list
             if isinstance(child, list):
