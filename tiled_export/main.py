@@ -1,5 +1,4 @@
 import argparse
-import importlib
 
 from tiled_export.convert import convert
 
