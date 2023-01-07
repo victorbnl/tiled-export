@@ -132,6 +132,8 @@ def export(obj, filename):
 
     dict_ = to_dict(obj)
 
+    dict_["luaversion"] = "5.1"
+
     encoder = LuaEncoder(indent=2)
     result = encoder.encode(dict_)
 
