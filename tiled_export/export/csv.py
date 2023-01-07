@@ -106,7 +106,7 @@ def export(obj, filename):
 
     # Write files
     for suffix, content in outfiles:
-        name, ext = filename.split('.', 1)
+        name, ext = filename.rsplit('.', 1)
         outfilename = name + (f"_{suffix}" if suffix else "") + f".{ext}"
         with open(outfilename, 'w') as outfile:
             csv.writer(outfile).writerows(content)

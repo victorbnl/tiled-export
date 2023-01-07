@@ -34,12 +34,29 @@ def test_all(filename, format_):
     if format_ == "csv" and ext == ".tsx":
         pytest.skip("Cannot export tileset as CSV")
 
+    # Directories
+    output_folder = os.path.join(OUTPUT_FOLDER, f"{filename}-{format_}")
+    expected_output_folder = EXPECTED_OUTPUTS_FOLDER
+    if not os.path.exists(output_folder):
+        os.mkdir(output_folder)
+
+    # File names
+    input_file = os.path.join(INPUT_FOLDER, filename)
+    output_file = os.path.join(output_folder, f"{name}.{format_}")
+
     # Convert the file
-    convert(f"{INPUT_FOLDER}/{filename}", format_, f"{OUTPUT_FOLDER}/{name}.{format_}")
+    convert(input_file, format_, output_file)
 
-    # Expected output not yet written
-    if not os.path.exists(f"{EXPECTED_OUTPUTS_FOLDER}/{name}.{format_}"):
-        pytest.xfail(f"Expected output not yet written for file: {name}.{format_}")
+    # Compare each file
+    for output in os.listdir(output_folder):
 
-    # Check if output file is equal to expected output
-    assert filecmp.cmp(f"{OUTPUT_FOLDER}/{name}.{format_}", f"{EXPECTED_OUTPUTS_FOLDER}/{name}.{format_}")
+        # File names
+        output_file = os.path.join(output_folder, output)
+        expected_output_file = os.path.join(expected_output_folder, output)
+
+        # Expected output not yet written
+        if not os.path.exists(f"{expected_output_folder}/{output}"):
+            pytest.xfail(f"Expected output not yet written for file: {output}")
+
+        # Check if output file is equal to expected output
+        assert filecmp.cmp(output_file, expected_output_file)
