@@ -87,4 +87,4 @@ def export(obj, filename):
 
     # Write file
     with open(filename, 'w') as jsonfile:
-        jsonfile.write(result)
+        jsonfile.write(result + "\n")

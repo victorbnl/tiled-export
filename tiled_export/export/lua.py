@@ -89,4 +89,4 @@ def export(obj, filename):
 
     # Write file
     with open(filename, 'w') as luafile:
-        luafile.write(result)
+        luafile.write(result + "\n")
