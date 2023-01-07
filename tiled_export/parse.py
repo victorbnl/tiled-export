@@ -150,7 +150,7 @@ def parse_node(node):
         data_node = node.child()
 
         # Gather data attributes and layer attributes
-        attrs = node.attrs() | data_node.attrs()
+        attrs = {**node.attrs(), **data_node.attrs()}
 
         layer = TileLayer(**attrs)
 

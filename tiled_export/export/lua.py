@@ -42,7 +42,7 @@ def to_dict(obj, _state={}):
         res = {}
         for k, v in obj:
             k = k.rstrip("_")
-            v = to_dict(v, _state | {"field_name": k})
+            v = to_dict(v, {**_state, "field_name": k})
 
             # Fix tileset source -> filename
             if isinstance(obj, Tileset) and k == "source":

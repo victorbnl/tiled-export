@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from typing import Optional, Literal
+from typing import Optional, List, Literal
 from pydantic import PositiveInt, NonNegativeInt
 from tiled_export.types.qt import Point
 from tiled_export.types.tiled.tileset.grid import Grid
@@ -45,5 +45,5 @@ class FullTileset(BaseModel):
 
     grid: Optional[Grid]
 
-    tiles: Optional[list[Tile]]
-    wangsets: Optional[list[Wangset]]
+    tiles: Optional[List[Tile]]
+    wangsets: Optional[List[Wangset]]

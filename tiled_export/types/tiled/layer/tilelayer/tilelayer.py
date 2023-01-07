@@ -1,6 +1,6 @@
 from tiled_export.types.tiled.layer.layer import Layer
 
-from typing import Optional, Literal
+from typing import Optional, List, Literal
 from pydantic import PositiveInt, NonNegativeInt
 
 from tiled_export.types.tiled.layer.tilelayer.chunk import Chunk
@@ -18,7 +18,7 @@ class TileLayer(Layer):
     encoding: Literal["csv", "base64"]
     compression: Literal["", "gzip", "zlib", "zstd"] = ""
 
-    chunks: Optional[list[Chunk]]
+    chunks: Optional[List[Chunk]]
     data: Optional[str]
 
     # def __iter__(self):

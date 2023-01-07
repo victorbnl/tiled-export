@@ -1,8 +1,7 @@
 from tiled_export.types.tiled.layer.layer import Layer
 
-from typing import Optional, Union
-from pydantic import PositiveInt, conint
-from tiled_export.types.qt import Color
+from typing import Optional, List
+from pydantic import PositiveInt
 
 
 class Group(Layer):
@@ -11,4 +10,4 @@ class Group(Layer):
     name: str = ""
     class_: Optional[str]
 
-    layers: Optional[list[Layer]]
+    layers: Optional[List[Layer]]

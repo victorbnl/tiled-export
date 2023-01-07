@@ -36,14 +36,17 @@ def to_dict(obj, _state={}):
     types = {Map: "map", TileLayer: "tilelayer"}
     if isinstance(obj, BaseModel):
         return {
-            k: v
-            for k, v in [
-                [k.rstrip("_"), to_dict(v, _state | {"field_name": k})]
-                for k, v in obj
+            **{
+                k: v
+                for k, v in [
+                    [k.rstrip("_"), to_dict(v, {**_state, "field_name": k})]
+                    for k, v in obj
+                    if v != None
+                ]
                 if v != None
-            ]
-            if v != None
-        } | ({"type": types[type(obj)]} if type(obj) in types else {})
+            },
+            **({"type": types[type(obj)]} if type(obj) in types else {})
+        }
 
     # List
     if isinstance(obj, list):

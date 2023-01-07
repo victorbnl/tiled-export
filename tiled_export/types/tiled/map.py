@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from typing import Optional, Union, Literal
+from typing import Optional, List, Literal
 from pydantic import NonNegativeInt
 from tiled_export.types.qt import Color
 from tiled_export.types.tiled.tileset import Tileset
@@ -36,8 +36,8 @@ class Map(BaseModel):
     compressionlevel: int = -1
     infinite: bool
 
-    properties: Optional[list]
-    tilesets: list[Tileset] = []
-    layers: list[Layer] = []
+    properties: Optional[List]
+    tilesets: List[Tileset] = []
+    layers: List[Layer] = []
 
     type_: Optional[str]

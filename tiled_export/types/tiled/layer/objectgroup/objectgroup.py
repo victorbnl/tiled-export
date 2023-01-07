@@ -1,7 +1,7 @@
 from tiled_export.types.tiled.layer.layer import Layer
 
-from typing import Optional, Literal
-from pydantic import PositiveInt, NonNegativeInt, conint
+from typing import Optional, List, Literal
+from pydantic import PositiveInt, NonNegativeInt
 from tiled_export.types import Color
 from tiled_export.types.tiled.layer.objectgroup.object import Object
 
@@ -20,4 +20,4 @@ class ObjectGroup(Layer):
     draworder: Literal["index", "topdown"] = "topdown"
 
     # properties
-    objects: list[Object] = []
+    objects: List[Object] = []
