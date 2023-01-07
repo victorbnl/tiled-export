@@ -1,13 +1,55 @@
 from pydantic import BaseModel
 
-from tiled_export.export._common import Encoder, get_items
+from tiled_export.export._common import Encoder
 from tiled_export.types import *
 from tiled_export.parse_data import parse_data
 
 
+class InlineList(list):
+    pass
+
+
+class RowList(list):
+    pass
+
+
+def to_dict(obj, _state={}):
+    """Converts a Tiled type to a dictionary"""
+
+    # Parse data
+    if _state.get("field_name", None) == "data" and _state["data_encoding"] == "csv":
+        return RowList(parse_data(obj, encoding="csv"))
+
+    # Get layer encoding
+    if isinstance(obj, TileLayer):
+        _state["data_encoding"] = obj.encoding
+
+    # Color
+    if isinstance(obj, Color):
+        return InlineList(obj.rgb())
+
+    # Pydantic class
+    if isinstance(obj, BaseModel):
+        return {
+            k: to_dict(v, _state | {"field_name": k})
+            for k, v in [
+                [k.rstrip("_"), v]
+                for k, v in obj
+            ]
+        }
+
+    # List
+    if isinstance(obj, list):
+        return [to_dict(v, _state) for v in obj]
+
+    # Other types
+    else:
+        return obj
+
+
 class LuaEncoder(Encoder):
 
-    def encode(self, obj, _depth=0, _state={}):
+    def encode(self, obj, _depth=0):
         """Encode dictionary to Lua"""
 
         # Add "return" keyword at the beginning
@@ -15,51 +57,47 @@ class LuaEncoder(Encoder):
             _depth += 1
             return "return " + self.encode(obj, _depth)
 
-        # Layer (get encoding)
-        if isinstance(obj, TileLayer):
-            _state["data_encoding"] = obj.encoding
+        # Dictionary
+        if isinstance(obj, dict):
 
-        # Data (parse it)
-        if isinstance(obj, str) and _state.get("field_name", None) == "data" and _state["data_encoding"] == "csv":
-
-            parsed = parse_data(obj, encoding="csv")
-
-            content = ",\n".join(
-                ", ".join(
-                    self.encode(v, _depth, _state)
-                    for v in line
-                )
-                for line in parsed
+            return self.block(
+                self.separator().join(
+                    f"{k} = {v}"
+                    for k, v in [
+                        [k, self.encode(v, _depth)]
+                        for k, v in obj.items()
+                        if v != None
+                    ]
+                ),
+                ("{", "}")
             )
 
-            return self.block(content, ("{", "}"))
+        # Row list
+        if isinstance(obj, RowList):
+            return self.block(
+                ",\n".join(
+                    ", ".join(
+                        self.encode(v, _depth)
+                        for v in line
+                    )
+                    for line in obj
+                ),
+                ("[", "]")
+            )
 
-        # Color
-        if isinstance(obj, Color):
-
-            return "{" + ", ".join(self.encode(v, _depth, _state) for v in obj.rgb()) + "}"
-
-        # Dataclass
-        if issubclass(type(obj), BaseModel):
-
-            lines = []
-            for k, v in get_items(obj):
-                if v != None:
-                    _state["field_name"] = k
-                    lines.append(f"{k} = {self.encode(v, _depth, _state)}")
-            _state["field_name"] = None
-            content = self.separator().join(lines)
-
-            return self.block(content, ("{", "}"))
+        # Inline list
+        if isinstance(obj, InlineList):
+            return "{" + ", ".join([self.encode(v, _depth) for v in obj]) + "}"
 
         # List
         if isinstance(obj, list):
-
-            content = self.separator().join(
-                self.encode(v, _depth, _state) for v in obj
+            return self.block(
+                self.separator().join(
+                    self.encode(v, _depth)
+                    for v in obj
+                ),
+                ("{", "}")
             )
-
-            return self.block(content, ("{", "}"))
 
         # Boolean
         if isinstance(obj, bool):
@@ -83,10 +121,10 @@ class LuaEncoder(Encoder):
 def export(obj, filename):
     """Exports a Tiled object to a Lua file"""
 
-    # Convert object to Lua
-    encoder = LuaEncoder(indent=2)
-    result = encoder.encode(obj)
+    dict_ = to_dict(obj)
 
-    # Write file
+    encoder = LuaEncoder(indent=2)
+    result = encoder.encode(dict_)
+
     with open(filename, 'w') as luafile:
         luafile.write(result + "\n")
