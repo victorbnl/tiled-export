@@ -105,7 +105,7 @@ class JsonEncoder(Encoder):
 
         # String
         if isinstance(obj, str):
-            obj = obj.replace('/', '\/')
+            obj = obj.replace('/', r'\/')
             return f"\"{obj}\""
 
         super().encode(obj)
