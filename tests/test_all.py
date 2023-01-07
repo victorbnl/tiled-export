@@ -34,12 +34,12 @@ def test_all(filename, format_):
     if format_ == "csv" and ext == ".tsx":
         pytest.skip("Cannot export tileset as CSV")
 
+    # Convert the file
+    convert(f"{INPUT_FOLDER}/{filename}", format_, f"{OUTPUT_FOLDER}/{name}.{format_}")
+
     # Expected output not yet written
     if not os.path.exists(f"{EXPECTED_OUTPUTS_FOLDER}/{name}.{format_}"):
         pytest.xfail(f"Expected output not yet written for file: {name}.{format_}")
-
-    # Convert the file
-    convert(f"{INPUT_FOLDER}/{filename}", format_, f"{OUTPUT_FOLDER}/{name}.{format_}")
 
     # Check if output file is equal to expected output
     assert filecmp.cmp(f"{OUTPUT_FOLDER}/{name}.{format_}", f"{EXPECTED_OUTPUTS_FOLDER}/{name}.{format_}")
