@@ -1,5 +1,3 @@
-import json
-
 from pydantic import BaseModel
 
 from tiled_export.export._common import Encoder
