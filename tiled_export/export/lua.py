@@ -16,6 +16,10 @@ class RowList(list):
 def to_dict(obj, _state={}):
     """Converts a Tiled type to a dictionary"""
 
+    # Fix csv -> lua encoding
+    if _state.get("field_name", None) == "encoding" and obj == "csv":
+        return to_dict("lua", _state)
+
     # Parse data
     if _state.get("field_name", None) == "data" and _state["data_encoding"] == "csv":
         return RowList(parse_data(obj, encoding="csv"))
@@ -30,13 +34,19 @@ def to_dict(obj, _state={}):
 
     # Pydantic class
     if isinstance(obj, BaseModel):
-        return {
-            k: to_dict(v, _state | {"field_name": k})
-            for k, v in [
-                [k.rstrip("_"), v]
-                for k, v in obj
-            ]
-        }
+
+        res = {}
+        for k, v in obj:
+            k = k.rstrip("_")
+            v = to_dict(v, _state | {"field_name": k})
+
+            # Fix tileset source -> filename
+            if isinstance(obj, Tileset) and k == "source":
+                k = "filename"
+
+            res[k] = v
+
+        return res
 
     # List
     if isinstance(obj, list):
@@ -59,7 +69,6 @@ class LuaEncoder(Encoder):
 
         # Dictionary
         if isinstance(obj, dict):
-
             return self.block(
                 self.separator().join(
                     f"{k} = {v}"
@@ -82,7 +91,7 @@ class LuaEncoder(Encoder):
                     )
                     for line in obj
                 ),
-                ("[", "]")
+                ("{", "}")
             )
 
         # Inline list
