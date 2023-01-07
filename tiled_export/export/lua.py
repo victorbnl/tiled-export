@@ -20,6 +20,10 @@ def to_dict(obj, _state={}):
     if _state.get("field_name", None) == "encoding" and obj == "csv":
         return to_dict("lua", _state)
 
+    # No compression when encoding is csv
+    if _state.get("field_name", None) == "compression" and _state.get("data_encoding", None) == "csv":
+        return None
+
     # Parse data
     if _state.get("field_name", None) == "data" and _state["data_encoding"] == "csv" and obj != None:
         return RowList(parse_data(obj, encoding="csv"))

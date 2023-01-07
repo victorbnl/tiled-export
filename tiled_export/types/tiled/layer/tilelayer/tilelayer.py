@@ -15,8 +15,8 @@ class TileLayer(Layer):
     width: NonNegativeInt
     height: NonNegativeInt
 
-    encoding: Optional[Literal["csv", "base64"]]
-    compression: Optional[Literal["uncompressed", "gzip", "zlib", "zstd"]]
+    encoding: Literal["csv", "base64"]
+    compression: Literal["", "gzip", "zlib", "zstd"] = ""
 
     chunks: Optional[list[Chunk]]
     data: Optional[str]

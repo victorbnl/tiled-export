@@ -31,7 +31,7 @@ def parse_data(data, encoding="csv", compression=None, width=16, height=16):
         bytes_array = base64.b64decode(data)
 
         # No compression
-        if compression == None:
+        if compression == "":
             array = bytes_array
 
         # Gzip compression
