@@ -1,7 +1,7 @@
 import csv
 
 from tiled_export.types import Map, TileLayer, Chunk
-from tiled_export.parse_data import parse_data
+from tiled_export.parse import parse_data
 
 
 def get_chunks(layer):

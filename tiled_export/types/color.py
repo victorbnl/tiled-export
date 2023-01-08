@@ -1,7 +1,4 @@
-from dataclasses import dataclass
-
-
-class Color:
+class Color(str):
 
     def __init__(self, hexcode):
         """A color"""
@@ -15,6 +12,9 @@ class Color:
 
     @classmethod
     def validate(cls, v):
+
+        if not isinstance(v, str):
+            raise TypeError("String required")
 
         return cls(v)
 

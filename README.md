@@ -29,6 +29,7 @@ Here are the features that are known (not) to be supported:
         - [ ] Object layers
         - [ ] Image layers
         - [ ] Group layers
+        - [ ] Embedded tilesets
     - **Encodings**
         - [ ] XML (deprecated)
         - [x] CSV

@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 from tiled_export.export._common import Encoder
 from tiled_export.types import *
-from tiled_export.parse_data import parse_data
+from tiled_export.parse.parse_data import parse_data
 
 
 class InlineList(list):
@@ -79,7 +79,7 @@ class LuaEncoder(Encoder):
                     for k, v in [
                         [k, self.encode(v, _depth)]
                         for k, v in obj.items()
-                        if v != None
+                        if v not in (None, [])
                     ]
                 ),
                 ("{", "}")

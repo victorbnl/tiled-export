@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="10" height="5" tilewidth="48" tileheight="48" infinite="0" backgroundcolor="#00aaff" nextlayerid="3" nextobjectid="10">
+ <editorsettings>
+  <export format="lua"/>
+ </editorsettings>
+ <tileset firstgid="1" source="tileset.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="10" height="5">
+  <data encoding="csv">
+0,0,0,0,0,0,0,2,0,0,
+0,0,0,0,0,0,0,2,0,0,
+0,0,0,0,0,0,0,2,0,0,
+1,1,0,0,1,1,1,1,1,1,
+3,3,0,0,3,3,3,3,3,3
+</data>
+ </layer>
+ <objectgroup id="2" name="Object Layer 1">
+  <object id="5" x="29.9456" y="64.7913" width="55.5354" height="55.5354"/>
+  <object id="6" x="415.971" y="119.238">
+   <point/>
+  </object>
+  <object id="7" x="102.904" y="25.0454">
+   <ellipse/>
+  </object>
+  <object id="8" x="141.561" y="30.49" width="81.6697" height="44.1016">
+   <ellipse/>
+  </object>
+  <object id="9" x="103.448" y="234.664">
+   <polygon points="0,0 78.9474,-1.08893 40.2904,-86.5699"/>
+  </object>
+ </objectgroup>
+</map>

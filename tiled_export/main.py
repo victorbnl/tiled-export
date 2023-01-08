@@ -20,4 +20,4 @@ def main():
         output_format = args.output_file.split(".")[-1]
 
     # Convert the file
-    result = convert(args.input_file, output_format, args.output_file)
+    convert(args.input_file, output_format, args.output_file)

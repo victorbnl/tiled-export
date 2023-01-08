@@ -1,2 +1,4 @@
+lxml
 pydantic
+pydantic-xml
 zstd

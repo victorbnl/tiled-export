@@ -2,7 +2,14 @@ from pydantic import BaseModel
 
 from tiled_export.export._common import Encoder
 from tiled_export.types import *
-from tiled_export.parse_data import parse_data
+from tiled_export.parse.parse_data import parse_data
+
+
+types = {
+    Map: "map",
+    TileLayer: "tilelayer",
+    ObjectGroup: "objectgroup",
+}
 
 
 class RowList(list):
@@ -33,19 +40,22 @@ def to_dict(obj, _state={}):
         return obj.hex()
 
     # Pydantic class
-    types = {Map: "map", TileLayer: "tilelayer"}
     if isinstance(obj, BaseModel):
+        type = None
+        for k, v in types.items():
+            if isinstance(obj, k):
+                type = v
         return {
             **{
                 k: v
                 for k, v in [
                     [k.rstrip("_"), to_dict(v, {**_state, "field_name": k})]
                     for k, v in obj
-                    if v != None
+                    if v not in (None, [])
                 ]
-                if v != None
+                if v not in (None, [])
             },
-            **({"type": types[type(obj)]} if type(obj) in types else {})
+            **({'type': type} if type != None else {})
         }
 
     # List
