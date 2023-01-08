@@ -5,8 +5,17 @@ import zlib
 import zstd
 import struct
 
+from typing import List, Literal
 
-def parse_data(data, encoding="csv", compression=None, width=16, height=16):
+formats = ['csv', 'base64']
+
+def parse_data(
+    data: str,
+    encoding: Literal['csv', 'base64'] = 'csv',
+    compression: Literal['', 'gzip', 'zlib', 'zstd'] = '',
+    width: int = 16,
+    height: int = 16
+) -> List[List[int]]:
     """Parses a Tiled data block with given encoding and compression"""
 
     data = data.strip()

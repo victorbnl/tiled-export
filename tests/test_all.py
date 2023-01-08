@@ -9,9 +9,9 @@ from tiled_export import convert
 
 
 # Constants
-INPUT_FOLDER = "inputs"
-OUTPUT_FOLDER = "outputs"
-EXPECTED_OUTPUTS_FOLDER = "expected_outputs"
+INPUT_FOLDER = 'inputs'
+OUTPUT_FOLDER = 'outputs'
+EXPECTED_OUTPUTS_FOLDER = 'expected_outputs'
 
 
 # Change to tests directory
@@ -22,15 +22,15 @@ if not os.path.exists(OUTPUT_FOLDER):
     os.mkdir(OUTPUT_FOLDER)
 
 
-@mark.parametrize("format_", ["csv", "json", "lua"])
-@mark.parametrize("filename", [filename for filename in os.listdir(INPUT_FOLDER) if re.match(r".*\.[tmx|tsx]", filename)])
+@mark.parametrize('format_', ['csv', 'json', 'lua'])
+@mark.parametrize('filename', [filename for filename in os.listdir(INPUT_FOLDER) if re.match(r'.*\.[tmx|tsx]', filename)])
 def test_all(filename, format_):
 
     # Split base name and extension
     name, ext = os.path.splitext(filename)
 
     # Cannot export tileset as CSV
-    if format_ == "csv" and ext == ".tsx":
+    if format_ == 'csv' and ext == '.tsx':
         pytest.skip("Cannot export tileset as CSV")
 
     # Directories

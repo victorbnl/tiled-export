@@ -1,9 +1,10 @@
 import argparse
 
 from tiled_export.export.convert import convert
+from tiled_export.parse.parse_data import parse_data
 
 
-def main():
+def main() -> None:
     """Exports your Tiled maps and tilesets in the desired format"""
 
     # Parse arguments

@@ -3,7 +3,7 @@ class Color(str):
     def __init__(self, hexcode):
         """A color"""
 
-        self.hexcode = hexcode.lstrip("#")
+        self.hexcode = hexcode.lstrip('#')
 
     @classmethod
     def __get_validators__(cls):

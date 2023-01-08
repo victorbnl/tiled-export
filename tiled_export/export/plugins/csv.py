@@ -1,12 +1,13 @@
 import csv
-import io
 
-from tiled_export.types import Map, TileLayer, Chunk
+from typing import List
+
+from tiled_export.types import RootMap, Map, TileLayer, Chunk, Tileset
 from tiled_export.parse import parse_data
 from tiled_export.export.result_file import ResultFile
 
 
-def get_chunks(layer):
+def get_chunks(layer: TileLayer) -> List[Chunk]:
     """Get every chunk of data from a layer"""
 
     chunks = layer.chunks or []
@@ -16,7 +17,7 @@ def get_chunks(layer):
     return chunks
 
 
-def to_array(layer):
+def to_array(layer: TileLayer) -> List[List[int]]:
     """Converts a Tiled layer to a list of lists of ints"""
 
     # Get layer size
@@ -75,7 +76,7 @@ def to_array(layer):
     return array
 
 
-def fix_gids(array, tilesets):
+def fix_gids(array: List[List[int]], tilesets: List[Tileset]) -> List[List[int]]:
     """Fix the GIDs to make them comply with Tiled's CSV format"""
 
     for y, row in enumerate(array):
@@ -89,7 +90,7 @@ def fix_gids(array, tilesets):
     return array
 
 
-def export(obj, filename):
+def export(obj: RootMap, filename: str) -> List[ResultFile]:
     """Exports a Tiled map to a CSV file"""
 
     # Given object must be a map

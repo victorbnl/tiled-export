@@ -1,13 +1,15 @@
+from abc import ABC
+
 from pydantic_xml import BaseXmlModel, BaseGenericXmlModel, attr, element, wrapped
 
-from typing import Optional, Dict, List, Tuple, Literal
+from typing import Optional, Type, Dict, List, Tuple, Literal
 from pydantic import PositiveInt, NonNegativeInt
 
 from tiled_export.types.root import RootNode
 from tiled_export.types.point import Point
 
 
-class Grid(BaseXmlModel, tag='grid'):
+class Grid(BaseXmlModel, tag='grid'): # type: ignore[call-arg]
 
     orientation: Literal['unknown', 'orthogonal', 'isometric', 'staggered', 'horizontal'] = attr()
 
@@ -15,13 +17,14 @@ class Grid(BaseXmlModel, tag='grid'):
     height: NonNegativeInt = attr()
 
 
-class TileOffset(BaseXmlModel, tag='tileoffset'):
+# type: ignore[call-arg]
+class TileOffset(BaseXmlModel, tag='tileoffset'): # type: ignore[call-arg]
 
     x: int = attr()
     y: int = attr()
 
 
-class Tile(BaseXmlModel, tag='tile'):
+class Tile(BaseXmlModel, tag='tile'): # type: ignore[call-arg]
 
     id_: Optional[int] = attr(name='id')
 
@@ -30,18 +33,17 @@ class Tile(BaseXmlModel, tag='tile'):
     imageheight: Optional[int] = wrapped('image', attr(name='height'))
 
 
-class Tileset(BaseXmlModel, tag='tileset'):
+class Tileset(ABC, BaseXmlModel):
 
     name: str = attr(default='')
-    firstgid: Optional[PositiveInt] = attr()
 
 
-class SourceTileset(Tileset, tag='tileset'):
+class EmbeddedTileset(ABC, BaseXmlModel):
 
-    source: Optional[str] = attr()
+    firstgid: PositiveInt = attr()
 
 
-class FullTileset(Tileset, tag='tileset'):
+class FullTileset(ABC, BaseXmlModel):
 
     class_: str = attr(default='')
 
@@ -65,5 +67,16 @@ class FullTileset(Tileset, tag='tileset'):
     tiles: Optional[List[Tile]] = element(tag='tile')
 
 
-class RootTileset(FullTileset, RootNode, tag='tileset'):
+class RootTileset(Tileset, RootNode, tag='tileset'): # type: ignore[call-arg]
+
     pass
+
+
+class FullEmbeddedTileset(FullTileset, EmbeddedTileset, tag='tileset'): # type: ignore[call-arg]
+
+    pass
+
+
+class SourcedEmbeddedTileset(Tileset, EmbeddedTileset, tag='tileset'): # type: ignore[call-arg]
+
+    source: Optional[str] = attr()

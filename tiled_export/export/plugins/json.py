@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+from typing import Union, Dict, List, Any
+
 from tiled_export.export.common import Encoder
 from tiled_export.types import *
 from tiled_export.parse.parse_data import parse_data
@@ -7,9 +9,9 @@ from tiled_export.export.result_file import ResultFile
 
 
 types = {
-    Map: "map",
-    TileLayer: "tilelayer",
-    ObjectGroup: "objectgroup",
+    Map: 'map',
+    TileLayer: 'tilelayer',
+    ObjectGroup: 'objectgroup',
 }
 
 
@@ -17,24 +19,24 @@ class RowList(list):
     pass
 
 
-def to_dict(obj, _state={}):
+def to_dict(obj: Any, _state: Dict[str, Any] = {}) -> Any:
     """Converts a Tiled type to a dictionary"""
 
     # Fix csv -> no encoding
-    if _state.get("field_name", None) == "encoding" and obj == "csv":
+    if _state.get('field_name', None) == 'encoding' and obj == 'csv':
         return None
 
     # No compression when encoding is csv
-    if _state.get("field_name", None) == "compression" and _state.get("data_encoding", None) == "csv":
+    if _state.get('field_name', None) == 'compression' and _state.get('data_encoding', None) == 'csv':
         return None
 
     # Parse data
-    if _state.get("field_name", None) == "data" and _state["data_encoding"] == "csv" and obj != None:
-        return RowList(parse_data(obj, encoding="csv"))
+    if _state.get('field_name', None) == 'data' and _state['data_encoding'] == 'csv' and obj != None:
+        return RowList(parse_data(obj, encoding='csv'))
 
     # Get layer encoding
     if isinstance(obj, TileLayer):
-        _state["data_encoding"] = obj.encoding
+        _state['data_encoding'] = obj.encoding
 
     # Color
     if isinstance(obj, Color):
@@ -50,7 +52,7 @@ def to_dict(obj, _state={}):
             **{
                 k: v
                 for k, v in [
-                    [k.rstrip("_"), to_dict(v, {**_state, "field_name": k})]
+                    [k.rstrip('_'), to_dict(v, {**_state, 'field_name': k})]
                     for k, v in obj
                     if v not in (None, [])
                 ]
@@ -70,7 +72,7 @@ def to_dict(obj, _state={}):
 
 class JsonEncoder(Encoder):
 
-    def encode(self, obj, _state={}):
+    def encode(self, obj: Any) -> str:
         """Encodes an object into a JSON string"""
 
         # Dictionary
@@ -126,10 +128,10 @@ class JsonEncoder(Encoder):
             obj = obj.replace('/', r'\/')
             return f"\"{obj}\""
 
-        super().encode(obj)
+        return super().encode(obj)
 
 
-def export(obj, filename):
+def export(obj: Union[RootMap, RootTileset], filename: str) -> List[ResultFile]:
     """Exports a Tiled object to a JSON file"""
 
     dict_ = to_dict(obj)
