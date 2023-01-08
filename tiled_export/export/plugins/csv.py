@@ -1,7 +1,9 @@
 import csv
+import io
 
 from tiled_export.types import Map, TileLayer, Chunk
 from tiled_export.parse import parse_data
+from tiled_export.export.result_file import ResultFile
 
 
 def get_chunks(layer):
@@ -104,9 +106,12 @@ def export(obj, filename):
     if len(outfiles) == 1:
         outfiles[0][0] = None
 
-    # Write files
+    # Return files
+    files = []
     for suffix, content in outfiles:
         name, ext = filename.rsplit('.', 1)
         outfilename = name + (f"_{suffix}" if suffix else "") + f".{ext}"
-        with open(outfilename, 'w') as outfile:
-            csv.writer(outfile).writerows(content)
+        file_ = ResultFile(path=outfilename)
+        csv.writer(file_.io).writerows(content)
+        files.append(file_)
+    return files

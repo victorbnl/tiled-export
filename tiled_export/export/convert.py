@@ -10,7 +10,7 @@ def convert(src_filename: str, format: Literal['csv', 'json', 'lua'], dest_filen
 
     obj = parse_file(src_filename)
 
-    exporter = import_module(f"tiled_export.export.{format}")
-    result = exporter.export(obj, dest_filename)
+    exporter = import_module(f"tiled_export.export.plugins.{format}")
+    result_files = exporter.export(obj, dest_filename)
 
-    return result
+    return result_files

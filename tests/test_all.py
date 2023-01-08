@@ -5,7 +5,7 @@ import os
 import re
 import filecmp
 
-from tiled_export.convert import convert
+from tiled_export import convert
 
 
 # Constants

@@ -1,12 +1,16 @@
 from pydantic import BaseModel
 
-from tiled_export.export._common import Encoder
+from tiled_export.export.common import Encoder
 from tiled_export.types import *
 from tiled_export.parse.parse_data import parse_data
+from tiled_export.export.result_file import ResultFile
 
 
-class InlineList(list):
-    pass
+types = {
+    Map: "map",
+    TileLayer: "tilelayer",
+    ObjectGroup: "objectgroup",
+}
 
 
 class RowList(list):
@@ -16,9 +20,9 @@ class RowList(list):
 def to_dict(obj, _state={}):
     """Converts a Tiled type to a dictionary"""
 
-    # Fix csv -> lua encoding
+    # Fix csv -> no encoding
     if _state.get("field_name", None) == "encoding" and obj == "csv":
-        return to_dict("lua", _state)
+        return None
 
     # No compression when encoding is csv
     if _state.get("field_name", None) == "compression" and _state.get("data_encoding", None) == "csv":
@@ -34,23 +38,26 @@ def to_dict(obj, _state={}):
 
     # Color
     if isinstance(obj, Color):
-        return InlineList(obj.rgb())
+        return obj.hex()
 
     # Pydantic class
     if isinstance(obj, BaseModel):
-
-        res = {}
-        for k, v in obj:
-            k = k.rstrip("_")
-            v = to_dict(v, {**_state, "field_name": k})
-
-            # Fix tileset source -> filename
-            if isinstance(obj, Tileset) and k == "source":
-                k = "filename"
-
-            res[k] = v
-
-        return res
+        type = None
+        for k, v in types.items():
+            if isinstance(obj, k):
+                type = v
+        return {
+            **{
+                k: v
+                for k, v in [
+                    [k.rstrip("_"), to_dict(v, {**_state, "field_name": k})]
+                    for k, v in obj
+                    if v not in (None, [])
+                ]
+                if v not in (None, [])
+            },
+            **({'type': type} if type != None else {})
+        }
 
     # List
     if isinstance(obj, list):
@@ -61,25 +68,19 @@ def to_dict(obj, _state={}):
         return obj
 
 
-class LuaEncoder(Encoder):
+class JsonEncoder(Encoder):
 
-    def encode(self, obj, _depth=0):
-        """Encode dictionary to Lua"""
-
-        # Add "return" keyword at the beginning
-        if _depth == 0:
-            _depth += 1
-            return "return " + self.encode(obj, _depth)
+    def encode(self, obj, _state={}):
+        """Encodes an object into a JSON string"""
 
         # Dictionary
         if isinstance(obj, dict):
             return self.block(
                 self.separator().join(
-                    f"{k} = {v}"
+                    f"\"{k}\": {v}"
                     for k, v in [
-                        [k, self.encode(v, _depth)]
+                        [k, self.encode(v)]
                         for k, v in obj.items()
-                        if v not in (None, [])
                     ]
                 ),
                 ("{", "}")
@@ -90,56 +91,53 @@ class LuaEncoder(Encoder):
             return self.block(
                 ",\n".join(
                     ", ".join(
-                        self.encode(v, _depth)
+                        self.encode(v)
                         for v in line
                     )
                     for line in obj
                 ),
-                ("{", "}")
+                ("[", "]")
             )
-
-        # Inline list
-        if isinstance(obj, InlineList):
-            return "{" + ", ".join([self.encode(v, _depth) for v in obj]) + "}"
 
         # List
         if isinstance(obj, list):
             return self.block(
                 self.separator().join(
-                    self.encode(v, _depth)
+                    self.encode(v)
                     for v in obj
                 ),
-                ("{", "}")
+                ("[", "]")
             )
 
         # Boolean
         if isinstance(obj, bool):
             return "true" if obj else "false"
 
-        # Float
-        if isinstance(obj, float):
-            return str(obj)
-
         # Integer
         if isinstance(obj, int):
             return str(obj)
 
+        # Float
+        if isinstance(obj, float):
+            return str(obj)
+
         # String
         if isinstance(obj, str):
+            obj = obj.replace('/', r'\/')
             return f"\"{obj}\""
 
         super().encode(obj)
 
 
 def export(obj, filename):
-    """Exports a Tiled object to a Lua file"""
+    """Exports a Tiled object to a JSON file"""
 
     dict_ = to_dict(obj)
 
-    dict_["luaversion"] = "5.1"
-
-    encoder = LuaEncoder(indent=2)
+    encoder = JsonEncoder(indent=2)
     result = encoder.encode(dict_)
 
-    with open(filename, 'w') as luafile:
-        luafile.write(result + "\n")
+    result_file = ResultFile(filename)
+    result_file.write(result)
+
+    return [result_file]

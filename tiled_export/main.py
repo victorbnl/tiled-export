@@ -1,6 +1,6 @@
 import argparse
 
-from tiled_export.convert import convert
+from tiled_export.export.convert import convert
 
 
 def main():
@@ -20,4 +20,9 @@ def main():
         output_format = args.output_file.split(".")[-1]
 
     # Convert the file
-    convert(args.input_file, output_format, args.output_file)
+    result_files = convert(args.input_file, output_format, args.output_file)
+
+    # Write them
+    for result_file in result_files:
+        with open(result_file.path, 'w') as outfile:
+            outfile.write(result_file.get_content())

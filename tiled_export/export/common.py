@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from dataclasses import fields
 
 
 def get_items(obj):
