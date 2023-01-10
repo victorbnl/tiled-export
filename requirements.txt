@@ -1,4 +1,5 @@
 lxml
+types-lxml
 pydantic
-pydantic-xml
+git+https://github.com/dapper91/pydantic-xml@dev
 zstd

@@ -9,7 +9,7 @@ from tiled_export.types.root import RootNode
 from tiled_export.types.point import Point
 
 
-class Grid(BaseXmlModel, tag='grid'): # type: ignore[call-arg]
+class Grid(BaseXmlModel, tag='grid'):
 
     orientation: Literal['unknown', 'orthogonal', 'isometric', 'staggered', 'horizontal'] = attr()
 
@@ -17,14 +17,14 @@ class Grid(BaseXmlModel, tag='grid'): # type: ignore[call-arg]
     height: NonNegativeInt = attr()
 
 
-# type: ignore[call-arg]
-class TileOffset(BaseXmlModel, tag='tileoffset'): # type: ignore[call-arg]
+
+class TileOffset(BaseXmlModel, tag='tileoffset'):
 
     x: int = attr()
     y: int = attr()
 
 
-class Tile(BaseXmlModel, tag='tile'): # type: ignore[call-arg]
+class Tile(BaseXmlModel, tag='tile'):
 
     id_: Optional[int] = attr(name='id')
 
@@ -67,16 +67,16 @@ class FullTileset(ABC, BaseXmlModel):
     tiles: Optional[List[Tile]] = element(tag='tile')
 
 
-class RootTileset(Tileset, RootNode, tag='tileset'): # type: ignore[call-arg]
+class RootTileset(Tileset, RootNode, tag='tileset'):
 
     pass
 
 
-class FullEmbeddedTileset(FullTileset, EmbeddedTileset, tag='tileset'): # type: ignore[call-arg]
+class FullEmbeddedTileset(FullTileset, EmbeddedTileset, tag='tileset'):
 
     pass
 
 
-class SourcedEmbeddedTileset(Tileset, EmbeddedTileset, tag='tileset'): # type: ignore[call-arg]
+class SourcedEmbeddedTileset(Tileset, EmbeddedTileset, tag='tileset'):
 
     source: Optional[str] = attr()

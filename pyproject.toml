@@ -7,6 +7,7 @@ name = "tiled_export"
 version = "1.0.0"
 dependencies = [
     "lxml",
+    "types-lxml",
     "pydantic",
     "pydantic_xml",
     "zstd",

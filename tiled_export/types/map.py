@@ -8,13 +8,13 @@ from pydantic import NonNegativeInt
 
 from tiled_export.types.root import RootNode
 from tiled_export.types.color import Color
-from tiled_export.types.tileset import Tileset
+from tiled_export.types.tileset import EmbeddedTileset
 from tiled_export.types.layers import Layer
 
 from tiled_export.types import utils
 
 
-class Map(BaseXmlModel, tag='map'): # type: ignore[call-arg]
+class Map(BaseXmlModel, tag='map'):
 
     class_: str = attr(name='class', default='')
 
@@ -40,7 +40,7 @@ class Map(BaseXmlModel, tag='map'): # type: ignore[call-arg]
     compressionlevel: int = attr(default=-1)
     infinite: bool = attr(default=False)
 
-    tilesets: List[Tileset] = element(tag='tileset')
+    tilesets: List[EmbeddedTileset] = Field(default_factory=list)
 
     layers: List[Layer] = Field(default_factory=list)
 
@@ -52,5 +52,5 @@ class Map(BaseXmlModel, tag='map'): # type: ignore[call-arg]
         return obj
 
 
-class RootMap(Map, RootNode, tag='map'): # type: ignore[call-arg]
+class RootMap(Map, RootNode, tag='map'):
     pass

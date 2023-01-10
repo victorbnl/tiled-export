@@ -12,11 +12,8 @@ from tiled_export.types.tileset import Tileset, FullEmbeddedTileset, SourcedEmbe
 from tiled_export.types import group
 
 
-def add_tilesets(cls, obj: BaseXmlModel, root: etree.Element) -> Optional[BaseXmlModel]:
+def add_tilesets(cls, obj: BaseXmlModel, root: etree.Element) -> BaseXmlModel:
     """Return object with tilesets added"""
-
-    if not obj:
-        return None
 
     tilesets: List[Tileset] = []
     for node in root.xpath('tileset'):
@@ -29,11 +26,8 @@ def add_tilesets(cls, obj: BaseXmlModel, root: etree.Element) -> Optional[BaseXm
 
 
 
-def add_layers(cls, obj: BaseXmlModel, root: etree.Element) -> Optional[BaseXmlModel]:
+def add_layers(cls, obj: BaseXmlModel, root: etree.Element) -> BaseXmlModel:
     """Return object with layers added"""
-
-    if not obj:
-        return None
 
     layer_types: Dict[str, Type[Layer]] = {
         'layer': TileLayer,

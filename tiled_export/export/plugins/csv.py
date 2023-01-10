@@ -2,7 +2,7 @@ import csv
 
 from typing import List
 
-from tiled_export.types import RootMap, Map, TileLayer, Chunk, Tileset
+from tiled_export.types import RootMap, Map, TileLayer, Chunk, EmbeddedTileset
 from tiled_export.parse import parse_data
 from tiled_export.export.result_file import ResultFile
 
@@ -76,7 +76,7 @@ def to_array(layer: TileLayer) -> List[List[int]]:
     return array
 
 
-def fix_gids(array: List[List[int]], tilesets: List[Tileset]) -> List[List[int]]:
+def fix_gids(array: List[List[int]], tilesets: List[EmbeddedTileset]) -> List[List[int]]:
     """Fix the GIDs to make them comply with Tiled's CSV format"""
 
     for y, row in enumerate(array):
