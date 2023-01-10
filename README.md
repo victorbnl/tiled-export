@@ -1,55 +1,42 @@
 # Tiled exporter
 
-A level converter for the [Tiled](https://www.mapeditor.org/) map editor
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/victorbnl/tiled-export/test.yml?label=tests)
 
-## Usage
+Tiled exporter is a project exporter for the
+[Tiled](https://www.mapeditor.org/) map editor
 
-**Install**
+## Setup
+
+### Install
 
 ```
 pip install git+https://github.com/victorbnl/tiled-export
 tiled-export --help
 ```
 
-**Without installing**
+### Without installing
 
 ```
 pip install -r requirements.txt
 python3 -m tiled_export --help
 ```
 
-## Roadmap
+## Usage
 
-Here are the features that are known (not) to be supported:
+### As a command
 
-- **Maps**
-    - **Features**
-        - [x] Infinite
-        - [x] Tile layers
-        - [ ] Object layers
-        - [ ] Image layers
-        - [ ] Group layers
-        - [ ] Embedded tilesets
-    - **Encodings**
-        - [ ] XML (deprecated)
-        - [x] CSV
-        - [x] Base64
-            - [x] Uncompressed
-            - [x] gzip
-            - [x] zlib
-            - [x] Zstandard
-    - **Export formats**
-        - [x] CSV
-        - [x] JSON
-        - [x] Lua
-        - [ ] JavaScript
-        - [ ] GameMaker Studio 2
-        - [ ] GameMaker Room
-- **Tilesets**
-    - **Features**
-        - [ ] Wangsets
-    - **Export formats**
-        - [x] JSON
-        - [x] Lua
+```
+tiled-export level.tmx output.csv
+```
 
-Unchecked features are planned to be worked on in the future. If there's a feature that you think should be implemented which doesn't appear in this list, please create an [issue](https://github.com/victorbnl/tiled-export/issues).
+### As a module
+
+```py
+import tiled_export
+
+files = tiled_export.export('level.tmx', 'csv', 'output.csv')
+
+for file_ in files:
+    with open(file_.path, 'w') as outfile:
+        outfile.write(file_.get_content())
+```
