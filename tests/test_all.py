@@ -25,6 +25,13 @@ if not os.path.exists(OUTPUT_FOLDER):
 @mark.parametrize('format_', ['csv', 'json', 'lua'])
 @mark.parametrize('filename', [filename for filename in os.listdir(INPUT_FOLDER) if re.match(r'.*\.[tmx|tsx]', filename)])
 def test_all(filename, format_):
+    """
+    Exports each file in inputs folder to outputs folder and compares them to expected outputs
+
+    Args:
+        filename (string): Path to the input file
+        format (literal): Format to which export it
+    """
 
     # Split base name and extension
     name, ext = os.path.splitext(filename)
