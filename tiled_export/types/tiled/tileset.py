@@ -1,3 +1,7 @@
+"""
+Tileset type definitions
+"""
+
 from abc import ABC
 
 from pydantic_xml import BaseXmlModel, BaseGenericXmlModel, attr, element, wrapped
@@ -5,11 +9,14 @@ from pydantic_xml import BaseXmlModel, BaseGenericXmlModel, attr, element, wrapp
 from typing import Optional, Type, Dict, List, Tuple, Literal
 from pydantic import PositiveInt, NonNegativeInt
 
-from tiled_export.types.root import RootNode
-from tiled_export.types.point import Point
+from tiled_export.types.tiled.root import RootNode
+from tiled_export.types.base import Point
 
 
 class Grid(BaseXmlModel, tag='grid'):
+    """
+    A tileset grid
+    """
 
     orientation: Literal['unknown', 'orthogonal', 'isometric', 'staggered', 'horizontal'] = attr()
 
@@ -17,14 +24,19 @@ class Grid(BaseXmlModel, tag='grid'):
     height: NonNegativeInt = attr()
 
 
-
 class TileOffset(BaseXmlModel, tag='tileoffset'):
+    """
+    A tileset offset
+    """
 
     x: int = attr()
     y: int = attr()
 
 
 class Tile(BaseXmlModel, tag='tile'):
+    """
+    A tileset tile
+    """
 
     id_: Optional[int] = attr(name='id')
 
@@ -33,17 +45,26 @@ class Tile(BaseXmlModel, tag='tile'):
     imageheight: Optional[int] = wrapped('image', attr(name='height'))
 
 
-class Tileset(ABC, BaseXmlModel):
+class Tileset(BaseXmlModel):
+    """
+    A tileset
+    """
 
     name: str = attr(default='')
 
 
-class EmbeddedTileset(ABC, BaseXmlModel):
+class EmbeddedTileset(Tileset):
+    """
+    An embedded tileset
+    """
 
     firstgid: PositiveInt = attr()
 
 
-class FullTileset(ABC, BaseXmlModel):
+class FullTileset(Tileset):
+    """
+    A full tileset (as opposed to sourced)
+    """
 
     class_: str = attr(default='')
 
@@ -67,16 +88,25 @@ class FullTileset(ABC, BaseXmlModel):
     tiles: Optional[List[Tile]] = element(tag='tile')
 
 
-class RootTileset(Tileset, RootNode, tag='tileset'):
+class RootTileset(FullTileset, RootNode, tag='tileset'):
+    """
+    A tileset when at root
+    """
 
     pass
 
 
 class FullEmbeddedTileset(FullTileset, EmbeddedTileset, tag='tileset'):
+    """
+    A full and embedded tileset
+    """
 
     pass
 
 
-class SourcedEmbeddedTileset(Tileset, EmbeddedTileset, tag='tileset'):
+class SourcedEmbeddedTileset(EmbeddedTileset, tag='tileset'):
+    """
+    A sourced tileset
+    """
 
     source: Optional[str] = attr()

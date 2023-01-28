@@ -1,12 +1,20 @@
+"""
+Object group type definitions
+"""
+
+
 from pydantic_xml import BaseXmlModel, attr
 
 from typing import Optional, List, Literal
 from pydantic import PositiveInt, NonNegativeFloat, NonNegativeInt
 
-from tiled_export.types.layers import Layer
+from tiled_export.types.tiled.layer import Layer
 
 
 class Object(BaseXmlModel, tag='object'):
+    """
+    An object
+    """
 
     id_: PositiveInt = attr(name='id')
     name: str = attr()
@@ -26,6 +34,9 @@ class Object(BaseXmlModel, tag='object'):
 
 
 class ObjectGroup(Layer, tag='objectgroup'):
+    """
+    An object group
+    """
 
     id_: PositiveInt = attr(name='id')
     name: str = attr(default='')

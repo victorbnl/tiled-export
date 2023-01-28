@@ -1,4 +1,10 @@
-tests/outputs
+stubs/zstd.pyi
+
+# Tests
+tests/outputs/
+
+# Pydoctor
+apidocs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

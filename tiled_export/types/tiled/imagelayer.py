@@ -1,12 +1,20 @@
+"""
+Image layer type definitions
+"""
+
+
 from pydantic_xml import attr, wrapped
 
 from typing import Optional
 from pydantic import PositiveInt, NonNegativeInt
 
-from tiled_export.types.layers import Layer
+from tiled_export.types.tiled.layer import Layer
 
 
 class ImageLayer(Layer, tag='imagelayer'):
+    """
+    An image layer
+    """
 
     id_: PositiveInt = attr(name='id')
     name: str = attr(default='')

@@ -5,7 +5,7 @@ import os
 import re
 import filecmp
 
-from tiled_export import convert
+from tiled_export import export
 
 
 # Constants
@@ -44,7 +44,7 @@ def test_all(filename, format_):
     output_file = os.path.join(output_folder, f"{name}.{format_}")
 
     # Convert the file
-    convert(input_file, format_, output_file)
+    export(input_file, format_, output_file)
 
     # Compare each file
     for output in os.listdir(output_folder):

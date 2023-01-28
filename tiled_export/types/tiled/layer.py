@@ -1,12 +1,18 @@
-from lxml import etree
+"""
+Layer type definitions
+"""
 
-from pydantic_xml import BaseXmlModel, attr, element
 
-from typing import Optional, List
-from pydantic import PositiveInt, conint
+from pydantic_xml import BaseXmlModel, attr
+
+from typing import Optional
+from pydantic import conint
 
 
 class Layer(BaseXmlModel):
+    """
+    A map layer
+    """
 
     x: int = attr(default=0)
     y: int = attr(default=0)

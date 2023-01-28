@@ -1,4 +1,4 @@
-from tiled_export.main import main
+from tiled_export.cli import main
 
 
 if __name__ == '__main__':

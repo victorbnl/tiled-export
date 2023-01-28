@@ -1,11 +1,17 @@
+"""
+Command-line interface
+"""
+
+
 import argparse
 
-from tiled_export.export.convert import convert
-from tiled_export.parse.parse_data import parse_data
+from tiled_export.export import export
 
 
 def main() -> None:
-    """Exports your Tiled maps and tilesets in the desired format"""
+    """
+    Exports your Tiled maps and tilesets in the desired format
+    """
 
     # Parse arguments
     argparser = argparse.ArgumentParser(prog="Tiled Export", description="Exports your Tiled maps and tilesets in the desired format")
@@ -20,10 +26,5 @@ def main() -> None:
     else:
         output_format = args.output_file.split(".")[-1]
 
-    # Convert the file
-    result_files = convert(args.input_file, output_format, args.output_file)
-
-    # Write them
-    for result_file in result_files:
-        with open(result_file.path, 'w') as outfile:
-            outfile.write(result_file.get_content())
+    # Export the files
+    export(args.input_file, output_format, args.output_file)

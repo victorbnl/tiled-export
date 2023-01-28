@@ -1,14 +1,27 @@
+"""
+Export data to CSV
+"""
+
+
 import csv
 
 from typing import List
 
 from tiled_export.types import RootMap, Map, TileLayer, Chunk, EmbeddedTileset
 from tiled_export.parse import parse_data
-from tiled_export.export.result_file import ResultFile
+from tiled_export.convert.convert import VirtualFile
 
 
 def get_chunks(layer: TileLayer) -> List[Chunk]:
-    """Get every chunk of data from a layer"""
+    """
+    Get every chunk of data from a layer
+
+    Args:
+        layer: Layer to get chunks from
+
+    Returns:
+        List of layer chunks
+    """
 
     chunks = layer.chunks or []
     if layer.data:
@@ -18,7 +31,15 @@ def get_chunks(layer: TileLayer) -> List[Chunk]:
 
 
 def to_array(layer: TileLayer) -> List[List[int]]:
-    """Converts a Tiled layer to a list of lists of ints"""
+    """
+    Converts a Tiled layer to a matrix
+
+    Args:
+        layer: Layer to build array from
+
+    Returns:
+        Matrix of GIDs
+    """
 
     # Get layer size
     if not layer.chunks:
@@ -77,7 +98,16 @@ def to_array(layer: TileLayer) -> List[List[int]]:
 
 
 def fix_gids(array: List[List[int]], tilesets: List[EmbeddedTileset]) -> List[List[int]]:
-    """Fix the GIDs to make them comply with Tiled's CSV format"""
+    """
+    Fix the GIDs to make them comply with Tiled's CSV format
+
+    Args:
+        array (list of lists of ints): Matrix to be fixed
+        tilesets (list of tilesets): Level tilesets
+
+    Returns:
+        Fixed matrix
+    """
 
     for y, row in enumerate(array):
         for x, gid in enumerate(row):
@@ -90,8 +120,20 @@ def fix_gids(array: List[List[int]], tilesets: List[EmbeddedTileset]) -> List[Li
     return array
 
 
-def export(obj: RootMap, filename: str) -> List[ResultFile]:
-    """Exports a Tiled map to a CSV file"""
+def export(obj: RootMap, filename: str) -> List[VirtualFile]:
+    """
+    Converts a map to CSV files
+
+    Args:
+        obj: Object to export
+        filename: Path to export object to
+
+    Returns:
+        List of virtual exported files
+
+    Raises:
+        ValueError: If `obj` is not a map
+    """
 
     # Given object must be a map
     if not isinstance(obj, Map):
@@ -112,7 +154,7 @@ def export(obj: RootMap, filename: str) -> List[ResultFile]:
     for suffix, content in outfiles:
         name, ext = filename.rsplit('.', 1)
         outfilename = name + (f"_{suffix}" if suffix else "") + f".{ext}"
-        file_ = ResultFile(path=outfilename)
+        file_ = VirtualFile(path=outfilename)
         csv.writer(file_.io).writerows(content)
         files.append(file_)
     return files

@@ -1,3 +1,8 @@
+"""
+Parse Tiled data chunks
+"""
+
+
 import csv
 import base64
 import gzip
@@ -7,7 +12,9 @@ import struct
 
 from typing import List, Literal
 
+
 formats = ['csv', 'base64']
+
 
 def parse_data(
     data: str,
@@ -16,7 +23,19 @@ def parse_data(
     width: int = 16,
     height: int = 16
 ) -> List[List[int]]:
-    """Parses a Tiled data block with given encoding and compression"""
+    """
+    Parse a Tiled data chunk
+
+    Args:
+        data: Source data text
+        encoding: Data encoding
+        compression: Data compression algorithm
+        width: Chunk width, required for building matrix
+        height: Chunk height, required for building matrix
+
+    Returns:
+        List of rows of GIDs
+    """
 
     data = data.strip()
 

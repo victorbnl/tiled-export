@@ -1,15 +1,20 @@
+"""
+Methods for layer and tileset parsing
+"""
+
+
 from lxml import etree
 
-from typing import Optional, Type, Dict, List
+from typing import Type, Dict, List
 from pydantic_xml import BaseXmlModel
 
-from tiled_export.types.layers import Layer
-from tiled_export.types.tilelayer import TileLayer
-from tiled_export.types.objectgroup import ObjectGroup
-from tiled_export.types.imagelayer import ImageLayer
-from tiled_export.types.tileset import Tileset, FullEmbeddedTileset, SourcedEmbeddedTileset
+from tiled_export.types.tiled.layer import Layer
+from tiled_export.types.tiled.tilelayer import TileLayer
+from tiled_export.types.tiled.objectgroup import ObjectGroup
+from tiled_export.types.tiled.imagelayer import ImageLayer
+from tiled_export.types.tiled.tileset import Tileset, FullEmbeddedTileset, SourcedEmbeddedTileset
 
-from tiled_export.types import group
+from tiled_export.types.tiled import group
 
 
 def add_tilesets(cls, obj: BaseXmlModel, root: etree.Element) -> BaseXmlModel:
@@ -23,7 +28,6 @@ def add_tilesets(cls, obj: BaseXmlModel, root: etree.Element) -> BaseXmlModel:
             tilesets.append(FullEmbeddedTileset.from_xml_tree(node))
 
     return cls.parse_obj({**dict(obj), 'tilesets': tilesets})
-
 
 
 def add_layers(cls, obj: BaseXmlModel, root: etree.Element) -> BaseXmlModel:

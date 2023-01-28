@@ -1,3 +1,8 @@
+"""
+Some common utilities that can be useful for various plugins
+"""
+
+
 from abc import ABC, abstractmethod
 
 from typing import List, Tuple, Any
@@ -5,7 +10,15 @@ from pydantic import BaseModel
 
 
 def get_items(obj: BaseModel) -> List[Tuple[str, str]]:
-    """Returns a list of items from a pydantic class"""
+    """
+    Get fields of pydantic objects
+
+    Args:
+        obj (pydantic object): The pydantic object to get fields from
+
+    Returns:
+        A list of tuples (name, value) of object fields
+    """
 
     return [
         (
@@ -19,13 +32,23 @@ def get_items(obj: BaseModel) -> List[Tuple[str, str]]:
 class Encoder(ABC):
 
     def __init__(self, indent=2):
-        """Encodes an object"""
+        """
+        Encodes an object
+        """
 
         self.indentation = indent
         self.newline = "\n" if indent else ""
 
     def indent(self, string: str) -> str:
-        """Indents the given string once"""
+        """
+        Indents a string once
+
+        Args:
+            string (string): String to be indented
+
+        Returns:
+            The indented string
+        """
 
         indentation = " " * self.indentation
 
@@ -35,12 +58,22 @@ class Encoder(ABC):
         )
 
     def separator(self) -> str:
-        """Returns a list/dict separator"""
+        """
+        Get a separator for list and dict values
+
+        Returns:
+            The separator
+        """
 
         return f",{self.newline}"
 
     def block(self, content: str, delimiters: Tuple[str, str]) -> str:
-        """Returns the given content inside a properly indented and delimited block"""
+        """
+        Get the given content inside a properly indented and delimited block
+
+        Returns:
+            content put in a block
+        """
 
         string = delimiters[0]
 
@@ -54,7 +87,15 @@ class Encoder(ABC):
         return string
 
     @abstractmethod
-    def encode(self, obj: Any):
-        """Encodes an object into a string"""
+    def encode(self, obj: Any) -> str:
+        """
+        Encodes an object into a string
+
+        Args:
+            obj (object): Object to encode
+
+        Returns:
+            Encoded object
+        """
 
         raise ValueError(f"Cannot encode type: {type(obj).__name__}")
