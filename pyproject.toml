@@ -14,4 +14,4 @@ dependencies = [
 ]
 
 [project.scripts]
-tiled-export = "tiled_export.main:main"
+tiled-export = "tiled_export.cli:main"
